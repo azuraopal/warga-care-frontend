@@ -16,4 +16,6 @@ export const reportsApi = {
   update: (id, data) => api.put(`/reports/${id}`, data),
   updateStatus: (id, data) => api.patch(`/reports/${id}/status`, data),
   delete: (id) => api.delete(`/reports/${id}`),
+  getCategories: () => api.get('/reports/categories'),
+  getStatuses: () => api.get('/reports/statuses'),
 };

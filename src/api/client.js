@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -18,7 +18,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if (error.response?.status === 401) {
       const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register';
       if (!isAuthPage) {
         localStorage.removeItem('wc_token');
@@ -26,7 +26,9 @@ api.interceptors.response.use(
         window.location.href = '/login';
       }
     }
-    return Promise.reject(error.response?.data || error);
+    const apiError = error.response?.data;
+    const message = apiError?.message || error.message || 'Terjadi kesalahan pada koneksi server';
+    return Promise.reject(typeof apiError === 'object' && apiError !== null ? { ...apiError, message } : { message });
   }
 );
 

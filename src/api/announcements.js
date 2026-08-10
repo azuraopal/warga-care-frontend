@@ -5,5 +5,6 @@ export const announcementsApi = {
   getById: (id) => api.get(`/announcements/${id}`),
   create: (data) => api.post('/announcements', data),
   update: (id, data) => api.put(`/announcements/${id}`, data),
+  togglePin: (id) => api.patch(`/announcements/${id}/pin`),
   delete: (id) => api.delete(`/announcements/${id}`),
 };
