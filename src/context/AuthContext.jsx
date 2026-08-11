@@ -53,6 +53,7 @@ export function AuthProvider({ children }) {
     setUser(null);
     localStorage.removeItem('wc_token');
     localStorage.removeItem('wc_user');
+    window.location.href = '/';
   };
 
   const isAdmin = user?.role === 'ADMIN_RT';
