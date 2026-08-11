@@ -13,7 +13,7 @@ import EventsPage from './pages/EventsPage'
 import ProfilePage from './pages/ProfilePage'
 import UsersManagementPage from './pages/UsersManagementPage'
 import ConfirmModal from './components/ui/ConfirmModal'
-import { LogOut, ShieldCheck, User, Lightbulb } from 'lucide-react'
+import { LogOut, ShieldCheck, User, Lightbulb, Megaphone, Calendar, FileText, CheckCircle2, Hourglass } from 'lucide-react'
 
 function AppShell({ children }) {
   const { user, logout, isAdmin } = useAuth()
@@ -461,11 +461,8 @@ function DashboardPage() {
         const promises = [
           announcementsApi.getAll(0, 5).catch(() => null),
           eventsApi.getUpcoming(0, 5).catch(() => null),
+          isAdmin ? dashboardApi.getStats().catch(() => null) : dashboardApi.getMyStats().catch(() => null)
         ]
-
-        if (isAdmin) {
-          promises.push(dashboardApi.getStats().catch(() => null))
-        }
 
         const [announcementRes, eventRes, statsRes] = await Promise.all(promises)
 
@@ -514,10 +511,10 @@ function DashboardPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
         {[
-          { label: 'Pengumuman Aktif', value: stats?.totalPengumuman ?? announcements.length, icon: '📣' },
-          { label: 'Acara Mendatang', value: stats?.totalKegiatan ?? events.length, icon: '📅' },
-          { label: 'Laporan Masuk', value: stats?.totalLaporan ?? '—', icon: '📝' },
-          { label: 'Laporan Pending', value: stats?.totalLaporanPending ?? '—', icon: '⏳' },
+          { label: 'Pengumuman Aktif', value: stats?.totalPengumuman ?? announcements.length, icon: <Megaphone size={28} style={{ color: '#8b5cf6' }} /> },
+          { label: 'Acara Mendatang', value: stats?.totalKegiatan ?? events.length, icon: <Calendar size={28} style={{ color: '#3b82f6' }} /> },
+          { label: isAdmin ? 'Total Laporan Masuk' : 'Laporan Selesai', value: isAdmin ? (stats?.totalLaporan ?? '—') : (stats?.totalLaporanSelesai ?? '—'), icon: isAdmin ? <FileText size={28} style={{ color: '#10b981' }} /> : <CheckCircle2 size={28} style={{ color: '#10b981' }} /> },
+          { label: 'Laporan Pending', value: stats?.totalLaporanPending ?? '—', icon: <Hourglass size={28} style={{ color: '#f59e0b' }} /> },
         ].map((card) => (
           <div key={card.label} style={{ background: 'white', borderRadius: '20px', padding: '1.25rem', boxShadow: '0 10px 30px rgba(15, 23, 42, 0.05)', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>

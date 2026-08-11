@@ -8,7 +8,7 @@ import LocationPicker from '../components/ui/LocationPicker';
 import { formatImageUrl } from '../utils/image';
 import { compressAndConvertImage } from '../utils/imageConverter';
 import { MapPin, Lightbulb, CheckCircle2, Lock, AlertCircle, Trash2, Plus, Search, Image as ImageIcon, Upload, Camera } from 'lucide-react';
-import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
 const redIcon = new L.Icon({
@@ -19,6 +19,17 @@ const redIcon = new L.Icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
 });
+
+function MapResizer() {
+  const map = useMap();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [map]);
+  return null;
+}
 
 const DEFAULT_CATEGORIES = [
   { value: 'JALAN_RUSAK', label: 'Jalan Rusak' },
@@ -439,33 +450,7 @@ export default function ReportsPage() {
                 {item.description}
               </p>
 
-              {item.photoEvidence && (
-                <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', maxHeight: '200px' }}>
-                  <img
-                    src={formatImageUrl(item.photoEvidence)}
-                    alt="Foto Bukti Pengaduan"
-                    style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', display: 'block' }}
-                    onError={(e) => { e.target.style.display = 'none'; }}
-                  />
-                </div>
-              )}
 
-              {item.latitude && item.longitude && (
-                <div className="report-mini-map">
-                  <MapContainer
-                    center={[item.latitude, item.longitude]}
-                    zoom={15}
-                    scrollWheelZoom={false}
-                    dragging={false}
-                    zoomControl={false}
-                    attributionControl={false}
-                    style={{ width: '100%', height: '100%' }}
-                  >
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <Marker position={[item.latitude, item.longitude]} icon={redIcon} />
-                  </MapContainer>
-                </div>
-              )}
 
               {isAdmin && (item.reporter || item.user) && (
                 <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '12px', fontSize: '0.875rem', color: '#475569', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -898,6 +883,7 @@ export default function ReportsPage() {
                         scrollWheelZoom={true}
                         style={{ width: '100%', height: '100%' }}
                       >
+                        <MapResizer />
                         <TileLayer
                           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
