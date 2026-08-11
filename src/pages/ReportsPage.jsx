@@ -4,9 +4,21 @@ import { reportsApi } from '../api/reports';
 import { uploadApi } from '../api/upload';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import SearchFilterBar from '../components/ui/SearchFilterBar';
+import LocationPicker from '../components/ui/LocationPicker';
 import { formatImageUrl } from '../utils/image';
 import { compressAndConvertImage } from '../utils/imageConverter';
-import { MapPin, Lightbulb, CheckCircle2, Lock, AlertCircle, Trash2, Plus, Search, Image as ImageIcon, Upload } from 'lucide-react';
+import { MapPin, Lightbulb, CheckCircle2, Lock, AlertCircle, Trash2, Plus, Search, Image as ImageIcon, Upload, Camera } from 'lucide-react';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import L from 'leaflet';
+
+const redIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
 const DEFAULT_CATEGORIES = [
   { value: 'JALAN_RUSAK', label: 'Jalan Rusak' },
@@ -79,7 +91,9 @@ export default function ReportsPage() {
   const [uploadingEvidence, setUploadingEvidence] = useState(false);
   const [devicePreviewUrl, setDevicePreviewUrl] = useState('');
 
-  const [createForm, setCreateForm] = useState({ title: '', description: '', category: 'JALAN_RUSAK', location: '' });
+  const [createForm, setCreateForm] = useState({ title: '', description: '', category: 'JALAN_RUSAK', location: '', latitude: null, longitude: null, photoEvidence: '' });
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState('');
   const [statusForm, setStatusForm] = useState({ status: 'DIPROSES', adminNotes: '', evidencePhoto: '', evidenceNotes: '' });
   const [submitting, setSubmitting] = useState(false);
 
@@ -171,6 +185,27 @@ export default function ReportsPage() {
     }
   };
 
+  const handlePhotoUpload = async (e) => {
+    const originalFile = e.target.files?.[0];
+    if (!originalFile) return;
+    setUploadingPhoto(true);
+    setError('');
+    try {
+      const fileToUpload = await compressAndConvertImage(originalFile);
+      const localUrl = URL.createObjectURL(fileToUpload);
+      setPhotoPreviewUrl(localUrl);
+      const res = await uploadApi.uploadFile(fileToUpload, 'reports');
+      const rawUrl = res?.data?.url || res?.url || res?.data?.data?.url || (typeof res?.data === 'string' ? res.data : '');
+      if (rawUrl) {
+        setCreateForm((prev) => ({ ...prev, photoEvidence: rawUrl }));
+      }
+    } catch (err) {
+      setError(err?.message || 'Gagal meng-upload foto bukti.');
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -178,7 +213,8 @@ export default function ReportsPage() {
     try {
       await reportsApi.create(createForm);
       setShowCreateModal(false);
-      setCreateForm({ title: '', description: '', category: 'JALAN_RUSAK', location: '' });
+      setCreateForm({ title: '', description: '', category: 'JALAN_RUSAK', location: '', latitude: null, longitude: null, photoEvidence: '' });
+      setPhotoPreviewUrl('');
       setActionMessage('Laporan pengaduan berhasil dikirim!');
       fetchReports();
       setTimeout(() => setActionMessage(''), 4000);
@@ -387,6 +423,11 @@ export default function ReportsPage() {
                         <MapPin size={14} /> {item.location}
                       </span>
                     )}
+                    {item.latitude && item.longitude && (
+                      <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'monospace' }}>
+                        ({item.latitude.toFixed(4)}, {item.longitude.toFixed(4)})
+                      </span>
+                    )}
                   </div>
                   <h2 style={{ fontSize: '1.3rem', margin: 0 }}>{item.title}</h2>
                 </div>
@@ -399,6 +440,34 @@ export default function ReportsPage() {
               <p style={{ color: '#334155', margin: 0, lineHeight: '1.6', whiteSpace: 'pre-line', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
                 {item.description}
               </p>
+
+              {item.photoEvidence && (
+                <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', maxHeight: '200px' }}>
+                  <img
+                    src={formatImageUrl(item.photoEvidence)}
+                    alt="Foto Bukti Pengaduan"
+                    style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', display: 'block' }}
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                </div>
+              )}
+
+              {item.latitude && item.longitude && (
+                <div className="report-mini-map">
+                  <MapContainer
+                    center={[item.latitude, item.longitude]}
+                    zoom={15}
+                    scrollWheelZoom={false}
+                    dragging={false}
+                    zoomControl={false}
+                    attributionControl={false}
+                    style={{ width: '100%', height: '100%' }}
+                  >
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <Marker position={[item.latitude, item.longitude]} icon={redIcon} />
+                  </MapContainer>
+                </div>
+              )}
 
               {isAdmin && (item.reporter || item.user) && (
                 <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '12px', fontSize: '0.875rem', color: '#475569', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
@@ -537,14 +606,45 @@ export default function ReportsPage() {
                 </select>
               </div>
 
+              <LocationPicker
+                latitude={createForm.latitude}
+                longitude={createForm.longitude}
+                location={createForm.location}
+                onLocationChange={({ latitude, longitude, location }) =>
+                  setCreateForm((prev) => ({ ...prev, latitude, longitude, location }))
+                }
+              />
+
               <div>
-                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.9rem' }}>Lokasi Kejadian / Fasilitas</label>
-                <input
-                  className="form-input"
-                  placeholder="Contoh: Jl. Melati No. 14 / Taman RT 02"
-                  value={createForm.location}
-                  onChange={(e) => setCreateForm((prev) => ({ ...prev, location: e.target.value }))}
-                />
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.9rem' }}>
+                  <Camera size={16} /> Foto Bukti Kejadian <span style={{ color: '#dc2626' }}>*</span>
+                </label>
+                <div className="photo-evidence-upload">
+                  <label className="photo-evidence-upload__btn">
+                    <Upload size={16} /> Upload Foto Bukti dari Device
+                    <input
+                      type="file"
+                      accept="image/*,.heic,.heif,.webp,.avif"
+                      onChange={handlePhotoUpload}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                  {uploadingPhoto && (
+                    <span style={{ display: 'block', fontSize: '0.8rem', color: '#2563eb', marginTop: '0.5rem', fontWeight: 600 }}>Meng-upload foto ke server...</span>
+                  )}
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginTop: '0.35rem' }}>
+                    Upload foto kondisi jalan rusak / masalah yang dilaporkan sebagai bukti.
+                  </span>
+                  {(photoPreviewUrl || createForm.photoEvidence) && (
+                    <div className="photo-evidence-preview">
+                      <img
+                        src={photoPreviewUrl || formatImageUrl(createForm.photoEvidence)}
+                        alt="Preview Foto Bukti"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>
@@ -582,7 +682,6 @@ export default function ReportsPage() {
         </div>
       )}
 
-      {/* Modal Ubah Status (ADMIN_RT) */}
       {showStatusModal && selectedReport && (
         <div className="modal-overlay" onClick={() => setShowStatusModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -784,6 +883,48 @@ export default function ReportsPage() {
                 {detailReport.location && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#64748b', fontSize: '0.9rem', backgroundColor: '#f8fafc', padding: '0.5rem 0.75rem', borderRadius: '8px' }}>
                     <MapPin size={16} /> {detailReport.location}
+                    {detailReport.latitude && detailReport.longitude && (
+                      <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'monospace', marginLeft: '0.5rem' }}>
+                        ({detailReport.latitude.toFixed(6)}, {detailReport.longitude.toFixed(6)})
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {detailReport.latitude && detailReport.longitude && (
+                  <div style={{ display: 'grid', gap: '0.5rem' }}>
+                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <MapPin size={16} /> Lokasi di Peta
+                    </h4>
+                    <div className="report-detail-map">
+                      <MapContainer
+                        center={[detailReport.latitude, detailReport.longitude]}
+                        zoom={17}
+                        scrollWheelZoom={true}
+                        style={{ width: '100%', height: '100%' }}
+                      >
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <Marker position={[detailReport.latitude, detailReport.longitude]} icon={redIcon} />
+                      </MapContainer>
+                    </div>
+                  </div>
+                )}
+
+                {detailReport.photoEvidence && (
+                  <div style={{ display: 'grid', gap: '0.5rem' }}>
+                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Camera size={16} /> Foto Bukti Pengaduan
+                    </h4>
+                    <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                      <img
+                        src={formatImageUrl(detailReport.photoEvidence)}
+                        alt="Foto Bukti Pengaduan"
+                        style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', background: '#f1f5f9' }}
+                      />
+                    </div>
                   </div>
                 )}
                 
