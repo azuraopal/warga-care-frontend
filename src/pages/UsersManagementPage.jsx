@@ -23,9 +23,11 @@ export default function UsersManagementPage() {
   const [userToDelete, setUserToDelete] = useState(null);
   const [userToToggleStatus, setUserToToggleStatus] = useState(null);
   const [processingAction, setProcessingAction] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
-  const fetchUsers = async () => {
-    setLoading(true);
+  const fetchUsers = async (showLoader = true) => {
+    if (showLoader) setLoading(true);
     setError('');
     try {
       const res = await usersApi.getAll({
@@ -39,7 +41,7 @@ export default function UsersManagementPage() {
     } catch (err) {
       setError(err?.message || 'Gagal mengambil daftar pengguna.');
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   };
 
@@ -70,7 +72,7 @@ export default function UsersManagementPage() {
       setShowRoleModal(false);
       setSelectedUser(null);
       setActionMessage('Role pengguna berhasil diperbarui!');
-      fetchUsers();
+      fetchUsers(false);
       setTimeout(() => setActionMessage(''), 4000);
     } catch (err) {
       setError(err?.message || 'Gagal mengubah role pengguna.');
@@ -87,7 +89,7 @@ export default function UsersManagementPage() {
       await usersApi.updateStatus(userToToggleStatus.id, newStatus);
       setUserToToggleStatus(null);
       setActionMessage(`Status akun berhasil diubah menjadi ${newStatus ? 'Aktif' : 'Nonaktif'}.`);
-      fetchUsers();
+      fetchUsers(false);
       setTimeout(() => setActionMessage(''), 4000);
     } catch (err) {
       setError(err?.message || 'Gagal mengubah status akun.');
@@ -97,13 +99,20 @@ export default function UsersManagementPage() {
   };
 
   const handleConfirmDeleteUser = async () => {
-    if (!userToDelete) return;
+    if (!userToDelete && selectedIds.length === 0) return;
     setProcessingAction(true);
     try {
-      await usersApi.delete(userToDelete.id);
+      if (userToDelete === 'BULK') {
+        await Promise.all(selectedIds.map(id => usersApi.delete(id)));
+        setActionMessage(`${selectedIds.length} pengguna berhasil dihapus.`);
+        setSelectedIds([]);
+        setIsSelectionMode(false);
+      } else {
+        await usersApi.delete(userToDelete.id);
+        setActionMessage('Pengguna berhasil dihapus.');
+      }
       setUserToDelete(null);
-      setActionMessage('Pengguna berhasil dihapus.');
-      fetchUsers();
+      fetchUsers(false);
       setTimeout(() => setActionMessage(''), 4000);
     } catch (err) {
       setError(err?.message || 'Gagal menghapus pengguna.');
@@ -131,6 +140,26 @@ export default function UsersManagementPage() {
           <h1 style={{ fontSize: '1.85rem', margin: '0.2rem 0 0.35rem' }}>Manajemen Data Warga</h1>
           <p style={{ color: '#64748b' }}>Kelola daftar warga terdaftar, ubah peran (Role), dan atur hak akses akun.</p>
         </div>
+        <button
+          type="button"
+          onClick={() => {
+            setIsSelectionMode(!isSelectionMode);
+            if (isSelectionMode) setSelectedIds([]);
+          }}
+          style={{
+            background: isSelectionMode ? '#e2e8f0' : 'white',
+            color: '#334155',
+            padding: '0.85rem 1.35rem',
+            borderRadius: '999px',
+            fontWeight: 700,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            border: '1px solid #cbd5e1'
+          }}
+        >
+          {isSelectionMode ? 'Batal Pilih' : 'Pilih'}
+        </button>
       </div>
 
       {actionMessage && (
@@ -176,17 +205,30 @@ export default function UsersManagementPage() {
           {users.map((item) => (
             <div
               key={item.id}
+              onClick={() => {
+                if (!isSelectionMode) return;
+                if (item.id === currentUser?.id) return;
+                if (selectedIds.includes(item.id)) {
+                  setSelectedIds(prev => prev.filter(id => id !== item.id));
+                } else {
+                  setSelectedIds(prev => [...prev, item.id]);
+                }
+              }}
               style={{
-                background: 'white',
+                background: selectedIds.includes(item.id) ? '#eff6ff' : 'white',
                 borderRadius: '18px',
                 padding: '1.25rem 1.5rem',
-                boxShadow: '0 10px 30px rgba(15, 23, 42, 0.04)',
-                border: '1px solid #f1f5f9',
+                boxShadow: selectedIds.includes(item.id) ? '0 10px 30px rgba(37, 99, 235, 0.15)' : '0 10px 30px rgba(15, 23, 42, 0.04)',
+                border: selectedIds.includes(item.id) ? '2px solid #2563eb' : '1px solid #f1f5f9',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
                 gap: '1rem',
+                position: 'relative',
+                transition: 'all 0.2s ease',
+                cursor: isSelectionMode ? (item.id === currentUser?.id ? 'not-allowed' : 'pointer') : 'default',
+                opacity: (isSelectionMode && !selectedIds.includes(item.id)) ? (item.id === currentUser?.id ? 0.4 : 0.8) : 1,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -209,6 +251,15 @@ export default function UsersManagementPage() {
 
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {isSelectionMode && (
+                      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.5rem' }}>
+                        {selectedIds.includes(item.id) ? (
+                          <CheckCircle2 size={24} color="#2563eb" fill="#eff6ff" />
+                        ) : (
+                          <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '2px solid #cbd5e1' }} />
+                        )}
+                      </div>
+                    )}
                     <strong style={{ fontSize: '1.1rem', color: '#0f172a' }}>{item.fullName || 'Warga'}</strong>
                     <span className={`badge ${item.role === 'ADMIN_RT' ? 'badge-role-admin' : 'badge-role-warga'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                       {item.role === 'ADMIN_RT' ? <Crown size={12} /> : <User size={12} />}
@@ -227,34 +278,36 @@ export default function UsersManagementPage() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  onClick={() => handleOpenRoleModal(item)}
-                  style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '0.5rem 0.85rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 600 }}
-                >
-                  Ubah Role
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setUserToToggleStatus(item)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: item.isActive ? '#fff7ed' : '#f0fdf4', color: item.isActive ? '#c2410c' : '#15803d', border: item.isActive ? '1px solid #ffedd5' : '1px solid #bbf7d0', padding: '0.5rem 0.85rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 600 }}
-                >
-                  {item.isActive ? <Ban size={14} /> : <CheckCircle2 size={14} />}
-                  {item.isActive ? 'Nonaktifkan' : 'Aktifkan'}
-                </button>
-
-                {item.id !== currentUser?.id && (
+              {!isSelectionMode && (
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <button
                     type="button"
-                    onClick={() => setUserToDelete(item)}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.5rem 0.85rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 600 }}
+                    onClick={(e) => { e.stopPropagation(); handleOpenRoleModal(item); }}
+                    style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '0.5rem 0.85rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}
                   >
-                    <Trash2 size={14} /> Hapus
+                    Ubah Role
                   </button>
-                )}
-              </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setUserToToggleStatus(item); }}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: item.isActive ? '#fff7ed' : '#f0fdf4', color: item.isActive ? '#c2410c' : '#15803d', border: item.isActive ? '1px solid #ffedd5' : '1px solid #bbf7d0', padding: '0.5rem 0.85rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    {item.isActive ? <Ban size={14} /> : <CheckCircle2 size={14} />}
+                    {item.isActive ? 'Nonaktifkan' : 'Aktifkan'}
+                  </button>
+
+                  {item.id !== currentUser?.id && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setUserToDelete(item); }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.5rem 0.85rem', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      <Trash2 size={14} /> Hapus
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -318,14 +371,61 @@ export default function UsersManagementPage() {
         variant={userToToggleStatus?.isActive ? 'danger' : 'primary'}
       />
 
+      {isSelectionMode && selectedIds.length > 0 && (
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'white',
+          padding: '1rem 1.5rem',
+          borderRadius: '16px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1.5rem',
+          zIndex: 100,
+          border: '1px solid #e2e8f0',
+          animation: 'slideUp 0.3s ease'
+        }}>
+          <span style={{ fontWeight: 600, color: '#0f172a' }}>{selectedIds.length} pengguna dipilih</span>
+          <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
+          <button
+            onClick={() => {
+              const selectableUsers = users.filter(u => u.id !== currentUser?.id);
+              if (selectedIds.length === selectableUsers.length) setSelectedIds([]);
+              else setSelectedIds(selectableUsers.map(e => e.id));
+            }}
+            style={{ background: 'none', border: 'none', color: '#2563eb', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+          >
+            {selectedIds.length === users.filter(u => u.id !== currentUser?.id).length ? 'Batal Semua' : 'Pilih Semua'}
+          </button>
+          <button
+            onClick={() => {
+              setIsSelectionMode(false);
+              setSelectedIds([]);
+            }}
+            style={{ background: 'none', border: 'none', color: '#64748b', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+          >
+            Batalkan
+          </button>
+          <button
+            onClick={() => setUserToDelete('BULK')}
+            style={{ background: '#dc2626', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 600, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Trash2 size={16} /> Hapus
+          </button>
+        </div>
+      )}
+
       <ConfirmModal
         isOpen={Boolean(userToDelete)}
         onClose={() => setUserToDelete(null)}
         onConfirm={handleConfirmDeleteUser}
         loading={processingAction}
-        title="Hapus Akun Pengguna?"
-        message={userToDelete ? `Apakah Anda yakin ingin menghapus akun ${userToDelete.fullName || userToDelete.email} secara permanen?` : ''}
-        confirmText="Ya, Hapus Pengguna"
+        title={userToDelete === 'BULK' ? 'Hapus Pengguna Terpilih?' : 'Hapus Akun Pengguna?'}
+        message={userToDelete === 'BULK' ? `Apakah Anda yakin ingin menghapus ${selectedIds.length} pengguna yang dipilih secara permanen?` : (userToDelete ? `Apakah Anda yakin ingin menghapus akun ${userToDelete.fullName || userToDelete.email} secara permanen?` : '')}
+        confirmText={userToDelete === 'BULK' ? `Ya, Hapus ${selectedIds.length} Pengguna` : 'Ya, Hapus Pengguna'}
         icon={Trash2}
         variant="danger"
       />

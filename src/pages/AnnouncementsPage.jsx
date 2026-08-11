@@ -17,12 +17,14 @@ export default function AnnouncementsPage() {
   const [editingItem, setEditingItem] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   const [form, setForm] = useState({ title: '', content: '', isPinned: false });
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchAnnouncements = async () => {
-    setLoading(true);
+  const fetchAnnouncements = async (showLoader = true) => {
+    if (showLoader) setLoading(true);
     setError('');
     try {
       const res = await announcementsApi.getAll(0, 50);
@@ -31,7 +33,7 @@ export default function AnnouncementsPage() {
     } catch (err) {
       setError(err?.message || 'Gagal memuat pengumuman.');
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   };
 
@@ -43,7 +45,7 @@ export default function AnnouncementsPage() {
     try {
       await announcementsApi.togglePin(item.id);
       setActionMessage(item.isPinned ? 'Sematan pengumuman dicopot.' : 'Pengumuman berhasil disematkan!');
-      fetchAnnouncements();
+      fetchAnnouncements(false);
       setTimeout(() => setActionMessage(''), 4000);
     } catch (err) {
       setError(err?.message || 'Gagal mengubah status sematan.');
@@ -75,7 +77,7 @@ export default function AnnouncementsPage() {
         setActionMessage('Pengumuman baru berhasil diterbitkan!');
       }
       setShowModal(false);
-      fetchAnnouncements();
+      fetchAnnouncements(false);
       setTimeout(() => setActionMessage(''), 4000);
     } catch (err) {
       setError(err?.message || 'Gagal menyimpan pengumuman.');
@@ -85,13 +87,20 @@ export default function AnnouncementsPage() {
   };
 
   const handleConfirmDelete = async () => {
-    if (!itemToDelete) return;
+    if (!itemToDelete && selectedIds.length === 0) return;
     setDeleting(true);
     try {
-      await announcementsApi.delete(itemToDelete.id);
+      if (itemToDelete === 'BULK') {
+        await Promise.all(selectedIds.map(id => announcementsApi.delete(id)));
+        setActionMessage(`${selectedIds.length} pengumuman berhasil dihapus.`);
+        setSelectedIds([]);
+        setIsSelectionMode(false);
+      } else {
+        await announcementsApi.delete(itemToDelete.id);
+        setActionMessage('Pengumuman berhasil dihapus.');
+      }
       setItemToDelete(null);
-      setActionMessage('Pengumuman berhasil dihapus.');
-      fetchAnnouncements();
+      fetchAnnouncements(false);
       setTimeout(() => setActionMessage(''), 4000);
     } catch (err) {
       setError(err?.message || 'Gagal menghapus pengumuman.');
@@ -121,23 +130,45 @@ export default function AnnouncementsPage() {
         </div>
 
         {isAdmin && (
-          <button
-            type="button"
-            onClick={handleOpenCreate}
-            style={{
-              background: '#2563eb',
-              color: 'white',
-              padding: '0.85rem 1.35rem',
-              borderRadius: '999px',
-              fontWeight: 700,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              boxShadow: '0 10px 25px rgba(37, 99, 235, 0.25)',
-            }}
-          >
-            <Plus size={18} /> Buat Pengumuman Baru
-          </button>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSelectionMode(!isSelectionMode);
+                if (isSelectionMode) setSelectedIds([]);
+              }}
+              style={{
+                background: isSelectionMode ? '#e2e8f0' : 'white',
+                color: '#334155',
+                padding: '0.85rem 1.35rem',
+                borderRadius: '999px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                border: '1px solid #cbd5e1'
+              }}
+            >
+              {isSelectionMode ? 'Batal Pilih' : 'Pilih'}
+            </button>
+            <button
+              type="button"
+              onClick={handleOpenCreate}
+              style={{
+                background: '#2563eb',
+                color: 'white',
+                padding: '0.85rem 1.35rem',
+                borderRadius: '999px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 10px 25px rgba(37, 99, 235, 0.25)',
+              }}
+            >
+              <Plus size={18} /> Buat Pengumuman Baru
+            </button>
+          </div>
         )}
       </div>
 
@@ -171,19 +202,31 @@ export default function AnnouncementsPage() {
       ) : (
         <div style={{ display: 'grid', gap: '1.25rem' }}>
           {filteredAnnouncements.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                background: 'white',
-                borderRadius: '20px',
-                padding: '1.6rem',
-                boxShadow: item.isPinned ? '0 15px 35px rgba(245, 158, 11, 0.08)' : '0 10px 30px rgba(15, 23, 42, 0.05)',
-                border: item.isPinned ? '1px solid #fde68a' : '1px solid #f1f5f9',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.85rem',
-              }}
-            >
+              <div
+                key={item.id}
+                onClick={() => {
+                  if (!isAdmin || !isSelectionMode) return;
+                  if (selectedIds.includes(item.id)) {
+                    setSelectedIds(prev => prev.filter(id => id !== item.id));
+                  } else {
+                    setSelectedIds(prev => [...prev, item.id]);
+                  }
+                }}
+                style={{
+                  background: selectedIds.includes(item.id) ? '#eff6ff' : 'white',
+                  borderRadius: '20px',
+                  padding: '1.6rem',
+                  boxShadow: item.isPinned ? '0 15px 35px rgba(245, 158, 11, 0.08)' : (selectedIds.includes(item.id) ? '0 10px 30px rgba(37, 99, 235, 0.15)' : '0 10px 30px rgba(15, 23, 42, 0.05)'),
+                  border: selectedIds.includes(item.id) ? '2px solid #2563eb' : (item.isPinned ? '1px solid #fde68a' : '1px solid #f1f5f9'),
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.85rem',
+                  position: 'relative',
+                  transition: 'all 0.2s ease',
+                  cursor: isSelectionMode ? 'pointer' : 'default',
+                  opacity: (isSelectionMode && !selectedIds.includes(item.id)) ? 0.7 : 1,
+                }}
+              >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   {item.isPinned && (
@@ -196,11 +239,11 @@ export default function AnnouncementsPage() {
                   </span>
                 </div>
 
-                {isAdmin && (
+                {isAdmin && !isSelectionMode && (
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <button
                       type="button"
-                      onClick={() => handleTogglePin(item)}
+                      onClick={(e) => { e.stopPropagation(); handleTogglePin(item); }}
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -219,15 +262,15 @@ export default function AnnouncementsPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleOpenEdit(item)}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#f1f5f9', color: '#0f172a', padding: '0.4rem 0.85rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600 }}
+                      onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#f1f5f9', color: '#0f172a', padding: '0.4rem 0.85rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
                     >
                       <Pencil size={14} /> Edit
                     </button>
                     <button
                       type="button"
-                      onClick={() => setItemToDelete(item)}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#fef2f2', color: '#dc2626', padding: '0.4rem 0.85rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600 }}
+                      onClick={(e) => { e.stopPropagation(); setItemToDelete(item); }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: '#fef2f2', color: '#dc2626', padding: '0.4rem 0.85rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
                     >
                       <Trash2 size={14} /> Hapus
                     </button>
@@ -235,7 +278,18 @@ export default function AnnouncementsPage() {
                 )}
               </div>
 
-              <h2 style={{ fontSize: '1.4rem', margin: 0, color: '#0f172a' }}>{item.title}</h2>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem' }}>
+                <h2 style={{ fontSize: '1.4rem', margin: 0, color: '#0f172a' }}>{item.title}</h2>
+                {isAdmin && isSelectionMode && (
+                  <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {selectedIds.includes(item.id) ? (
+                      <CheckCircle2 size={24} color="#2563eb" fill="#eff6ff" />
+                    ) : (
+                      <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '2px solid #cbd5e1' }} />
+                    )}
+                  </div>
+                )}
+              </div>
               <p style={{ color: '#334155', margin: 0, lineHeight: '1.65', whiteSpace: 'pre-line' }}>{item.content}</p>
 
               {item.authorName && (
@@ -320,17 +374,64 @@ export default function AnnouncementsPage() {
         </div>
       )}
 
-      <ConfirmModal
-        isOpen={Boolean(itemToDelete)}
-        onClose={() => setItemToDelete(null)}
-        onConfirm={handleConfirmDelete}
-        loading={deleting}
-        title="Hapus Pengumuman RT?"
-        message={itemToDelete ? `Apakah Anda yakin ingin menghapus pengumuman "${itemToDelete.title}"?` : ''}
-        confirmText="Ya, Hapus Pengumuman"
-        icon={Trash2}
-        variant="danger"
-      />
+      {isAdmin && isSelectionMode && selectedIds.length > 0 && (
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'white',
+          padding: '1rem 1.5rem',
+          borderRadius: '16px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1.5rem',
+          zIndex: 100,
+          border: '1px solid #e2e8f0',
+          animation: 'slideUp 0.3s ease'
+        }}>
+          <span style={{ fontWeight: 600, color: '#0f172a' }}>{selectedIds.length} pengumuman dipilih</span>
+          <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
+          <button
+            onClick={() => {
+              if (selectedIds.length === filteredAnnouncements.length) setSelectedIds([]);
+              else setSelectedIds(filteredAnnouncements.map(e => e.id));
+            }}
+            style={{ background: 'none', border: 'none', color: '#2563eb', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+          >
+            {selectedIds.length === filteredAnnouncements.length ? 'Batal Semua' : 'Pilih Semua'}
+          </button>
+          <button
+            onClick={() => {
+              setIsSelectionMode(false);
+              setSelectedIds([]);
+            }}
+            style={{ background: 'none', border: 'none', color: '#64748b', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+          >
+            Batalkan
+          </button>
+          <button
+            onClick={() => setItemToDelete('BULK')}
+            style={{ background: '#dc2626', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 600, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Trash2 size={16} /> Hapus
+          </button>
+        </div>
+      )}
+
+      {itemToDelete && (
+        <ConfirmModal
+          isOpen={!!itemToDelete}
+          onClose={() => setItemToDelete(null)}
+          onConfirm={handleConfirmDelete}
+          title={itemToDelete === 'BULK' ? 'Hapus Pengumuman Terpilih?' : 'Hapus Pengumuman RT?'}
+          description={itemToDelete === 'BULK' ? `Apakah Anda yakin ingin menghapus ${selectedIds.length} pengumuman yang dipilih? Tindakan ini tidak dapat dibatalkan.` : 'Apakah Anda yakin ingin menghapus pengumuman ini secara permanen?'}
+          confirmText={itemToDelete === 'BULK' ? `Ya, Hapus ${selectedIds.length} Pengumuman` : 'Ya, Hapus Pengumuman'}
+          isDanger={true}
+          isLoading={deleting}
+        />
+      )}
     </section>
   );
 }

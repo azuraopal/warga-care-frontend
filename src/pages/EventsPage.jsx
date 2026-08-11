@@ -27,14 +27,16 @@ export default function EventsPage() {
   const [editingItem, setEditingItem] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [devicePreviewUrl, setDevicePreviewUrl] = useState('');
 
   const [form, setForm] = useState({ title: '', description: '', eventDate: '', location: '', imageUrl: '' });
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchEvents = async () => {
-    setLoading(true);
+  const fetchEvents = async (showLoader = true) => {
+    if (showLoader) setLoading(true);
     setError('');
     try {
       const res = await eventsApi.getAll(0, 50);
@@ -43,7 +45,7 @@ export default function EventsPage() {
     } catch (err) {
       setError(err?.message || 'Gagal memuat jadwal kegiatan.');
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   };
 
@@ -119,7 +121,7 @@ export default function EventsPage() {
         setActionMessage('Jadwal kegiatan baru berhasil dibuat!');
       }
       setShowModal(false);
-      fetchEvents();
+      fetchEvents(false);
       setTimeout(() => setActionMessage(''), 4000);
     } catch (err) {
       setError(err?.message || 'Gagal menyimpan kegiatan.');
@@ -129,13 +131,20 @@ export default function EventsPage() {
   };
 
   const handleConfirmDelete = async () => {
-    if (!itemToDelete) return;
+    if (!itemToDelete && selectedIds.length === 0) return;
     setDeleting(true);
     try {
-      await eventsApi.delete(itemToDelete.id);
+      if (itemToDelete === 'BULK') {
+        await Promise.all(selectedIds.map(id => eventsApi.delete(id)));
+        setActionMessage(`${selectedIds.length} kegiatan berhasil dihapus.`);
+        setSelectedIds([]);
+        setIsSelectionMode(false);
+      } else {
+        await eventsApi.delete(itemToDelete.id);
+        setActionMessage('Jadwal kegiatan berhasil dihapus.');
+      }
       setItemToDelete(null);
-      setActionMessage('Jadwal kegiatan berhasil dihapus.');
-      fetchEvents();
+      fetchEvents(false);
       setTimeout(() => setActionMessage(''), 4000);
     } catch (err) {
       setError(err?.message || 'Gagal menghapus kegiatan.');
@@ -166,23 +175,45 @@ export default function EventsPage() {
         </div>
 
         {isAdmin && (
-          <button
-            type="button"
-            onClick={handleOpenCreate}
-            style={{
-              background: '#2563eb',
-              color: 'white',
-              padding: '0.85rem 1.35rem',
-              borderRadius: '999px',
-              fontWeight: 700,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              boxShadow: '0 10px 25px rgba(37, 99, 235, 0.25)',
-            }}
-          >
-            <Plus size={18} /> Buat Kegiatan Baru
-          </button>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSelectionMode(!isSelectionMode);
+                if (isSelectionMode) setSelectedIds([]);
+              }}
+              style={{
+                background: isSelectionMode ? '#e2e8f0' : 'white',
+                color: '#334155',
+                padding: '0.85rem 1.35rem',
+                borderRadius: '999px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                border: '1px solid #cbd5e1'
+              }}
+            >
+              {isSelectionMode ? 'Batal Pilih' : 'Pilih'}
+            </button>
+            <button
+              type="button"
+              onClick={handleOpenCreate}
+              style={{
+                background: '#2563eb',
+                color: 'white',
+                padding: '0.85rem 1.35rem',
+                borderRadius: '999px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                boxShadow: '0 10px 25px rgba(37, 99, 235, 0.25)',
+              }}
+            >
+              <Plus size={18} /> Buat Kegiatan Baru
+            </button>
+          </div>
         )}
       </div>
 
@@ -220,16 +251,37 @@ export default function EventsPage() {
             return (
               <div
                 key={item.id}
+                onClick={() => {
+                  if (!isAdmin || !isSelectionMode) return;
+                  if (selectedIds.includes(item.id)) {
+                    setSelectedIds(prev => prev.filter(id => id !== item.id));
+                  } else {
+                    setSelectedIds(prev => [...prev, item.id]);
+                  }
+                }}
                 style={{
-                  background: 'white',
+                  background: selectedIds.includes(item.id) ? '#eff6ff' : 'white',
                   borderRadius: '20px',
                   overflow: 'hidden',
-                  boxShadow: '0 10px 30px rgba(15, 23, 42, 0.05)',
-                  border: '1px solid #f1f5f9',
+                  boxShadow: selectedIds.includes(item.id) ? '0 10px 30px rgba(37, 99, 235, 0.15)' : '0 10px 30px rgba(15, 23, 42, 0.05)',
+                  border: selectedIds.includes(item.id) ? '2px solid #2563eb' : '1px solid #f1f5f9',
                   display: 'flex',
                   flexDirection: 'column',
+                  position: 'relative',
+                  transition: 'all 0.2s ease',
+                  cursor: isSelectionMode ? 'pointer' : 'default',
+                  opacity: (isSelectionMode && !selectedIds.includes(item.id)) ? 0.7 : 1,
                 }}
               >
+                {isAdmin && isSelectionMode && (
+                  <div style={{ position: 'absolute', top: '1rem', left: '1rem', zIndex: 10, background: 'rgba(255,255,255,0.95)', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                    {selectedIds.includes(item.id) ? (
+                      <CheckCircle2 size={28} color="#2563eb" fill="#eff6ff" style={{ margin: '-2px' }} />
+                    ) : (
+                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: '2px solid #94a3b8' }} />
+                    )}
+                  </div>
+                )}
                 {item.imageUrl && (
                   <div style={{ height: '200px', width: '100%', overflow: 'hidden', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                     <img
@@ -259,19 +311,25 @@ export default function EventsPage() {
                       <Calendar size={14} /> {eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'Mendatang'}
                     </span>
 
-                    {isAdmin && (
+                    {isAdmin && !isSelectionMode && (
                       <div style={{ display: 'flex', gap: '0.35rem', flexShrink: 0 }}>
                         <button
                           type="button"
-                          onClick={() => handleOpenEdit(item)}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#f1f5f9', color: '#0f172a', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600 }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEdit(item);
+                          }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#f1f5f9', color: '#0f172a', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
                         >
                           <Pencil size={13} /> Edit
                         </button>
                         <button
                           type="button"
-                          onClick={() => setItemToDelete(item)}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#fef2f2', color: '#dc2626', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600 }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setItemToDelete(item);
+                          }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#fef2f2', color: '#dc2626', padding: '0.35rem 0.75rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
                         >
                           <Trash2 size={13} /> Hapus
                         </button>
@@ -279,7 +337,9 @@ export default function EventsPage() {
                     )}
                   </div>
 
-                  <h2 style={{ fontSize: '1.3rem', margin: 0, color: '#0f172a' }}>{item.title}</h2>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem' }}>
+                    <h2 style={{ fontSize: '1.3rem', margin: 0, color: '#0f172a' }}>{item.title}</h2>
+                  </div>
 
                   {item.location && (
                     <div style={{ fontSize: '0.9rem', color: '#475569', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
@@ -459,17 +519,64 @@ export default function EventsPage() {
         </div>
       )}
 
-      <ConfirmModal
-        isOpen={Boolean(itemToDelete)}
-        onClose={() => setItemToDelete(null)}
-        onConfirm={handleConfirmDelete}
-        loading={deleting}
-        title="Hapus Jadwal Kegiatan?"
-        message={itemToDelete ? `Apakah Anda yakin ingin menghapus jadwal kegiatan "${itemToDelete.title}"?` : ''}
-        confirmText="Ya, Hapus Kegiatan"
-        icon={Trash2}
-        variant="danger"
-      />
+      {isAdmin && isSelectionMode && selectedIds.length > 0 && (
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'white',
+          padding: '1rem 1.5rem',
+          borderRadius: '16px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1.5rem',
+          zIndex: 100,
+          border: '1px solid #e2e8f0',
+          animation: 'slideUp 0.3s ease'
+        }}>
+          <span style={{ fontWeight: 600, color: '#0f172a' }}>{selectedIds.length} event dipilih</span>
+          <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
+          <button
+            onClick={() => {
+              if (selectedIds.length === filteredEvents.length) setSelectedIds([]);
+              else setSelectedIds(filteredEvents.map(e => e.id));
+            }}
+            style={{ background: 'none', border: 'none', color: '#2563eb', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+          >
+            {selectedIds.length === filteredEvents.length ? 'Batal Semua' : 'Pilih Semua'}
+          </button>
+          <button
+            onClick={() => {
+              setIsSelectionMode(false);
+              setSelectedIds([]);
+            }}
+            style={{ background: 'none', border: 'none', color: '#64748b', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+          >
+            Batalkan
+          </button>
+          <button
+            onClick={() => setItemToDelete('BULK')}
+            style={{ background: '#dc2626', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 600, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Trash2 size={16} /> Hapus
+          </button>
+        </div>
+      )}
+
+      {itemToDelete && (
+        <ConfirmModal
+          isOpen={!!itemToDelete}
+          onClose={() => setItemToDelete(null)}
+          onConfirm={handleConfirmDelete}
+          title={itemToDelete === 'BULK' ? 'Hapus Kegiatan Terpilih?' : 'Hapus Jadwal Kegiatan?'}
+          description={itemToDelete === 'BULK' ? `Apakah Anda yakin ingin menghapus ${selectedIds.length} kegiatan yang dipilih? Tindakan ini tidak dapat dibatalkan.` : 'Apakah Anda yakin ingin menghapus jadwal kegiatan ini? Tindakan ini tidak dapat dibatalkan.'}
+          confirmText={itemToDelete === 'BULK' ? `Ya, Hapus ${selectedIds.length} Kegiatan` : 'Ya, Hapus Kegiatan'}
+          isDanger={true}
+          isLoading={deleting}
+        />
+      )}
     </section>
   );
 }

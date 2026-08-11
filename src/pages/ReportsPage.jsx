@@ -100,6 +100,8 @@ export default function ReportsPage() {
   const [reportToDelete, setReportToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [uploadingEvidence, setUploadingEvidence] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [devicePreviewUrl, setDevicePreviewUrl] = useState('');
 
   const [createForm, setCreateForm] = useState({ title: '', description: '', category: 'JALAN_RUSAK', location: '', latitude: null, longitude: null, photoEvidence: '' });
@@ -139,8 +141,8 @@ export default function ReportsPage() {
     fetchMetadata();
   }, []);
 
-  const fetchReports = async () => {
-    setLoading(true);
+  const fetchReports = async (showLoader = true) => {
+    if (showLoader) setLoading(true);
     setError('');
     try {
       if (isAdmin) {
@@ -161,7 +163,7 @@ export default function ReportsPage() {
     } catch (err) {
       setError(err?.message || 'Gagal mengambil daftar laporan.');
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   };
 
@@ -278,13 +280,20 @@ export default function ReportsPage() {
   };
 
   const handleConfirmDeleteReport = async () => {
-    if (!reportToDelete) return;
+    if (!reportToDelete && selectedIds.length === 0) return;
     setDeleting(true);
     try {
-      await reportsApi.delete(reportToDelete.id);
+      if (reportToDelete === 'BULK') {
+        await Promise.all(selectedIds.map(id => reportsApi.delete(id)));
+        setActionMessage(`${selectedIds.length} laporan berhasil dihapus.`);
+        setSelectedIds([]);
+        setIsSelectionMode(false);
+      } else {
+        await reportsApi.delete(reportToDelete.id);
+        setActionMessage('Laporan berhasil dihapus.');
+      }
       setReportToDelete(null);
-      setActionMessage('Laporan berhasil dihapus.');
-      fetchReports();
+      fetchReports(false);
       setTimeout(() => setActionMessage(''), 4000);
     } catch (err) {
       setError(err?.message || 'Gagal menghapus laporan.');
@@ -341,13 +350,35 @@ export default function ReportsPage() {
         </div>
 
         {!isAdmin && (
-          <button
-            type="button"
-            onClick={() => setShowCreateModal(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.8rem 1.4rem', borderRadius: '999px', fontWeight: 700, boxShadow: '0 8px 20px rgba(37, 99, 235, 0.25)' }}
-          >
-            <Plus size={18} /> Buat Laporan Pengaduan
-          </button>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSelectionMode(!isSelectionMode);
+                if (isSelectionMode) setSelectedIds([]);
+              }}
+              style={{
+                background: isSelectionMode ? '#e2e8f0' : 'white',
+                color: '#334155',
+                padding: '0.85rem 1.35rem',
+                borderRadius: '999px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                border: '1px solid #cbd5e1'
+              }}
+            >
+              {isSelectionMode ? 'Batal Pilih' : 'Pilih'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowCreateModal(true)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.8rem 1.4rem', borderRadius: '999px', fontWeight: 700, boxShadow: '0 8px 20px rgba(37, 99, 235, 0.25)' }}
+            >
+              <Plus size={18} /> Buat Laporan Pengaduan
+            </button>
+          </div>
         )}
       </div>
 
@@ -410,14 +441,31 @@ export default function ReportsPage() {
           {reports.map((item) => (
             <div
               key={item.id}
+              onClick={() => {
+                if (isAdmin) {
+                  // Admin clicks don't trigger selection mode
+                } else {
+                  if (isSelectionMode && item.status === 'PENDING') {
+                    if (selectedIds.includes(item.id)) {
+                      setSelectedIds(prev => prev.filter(id => id !== item.id));
+                    } else {
+                      setSelectedIds(prev => [...prev, item.id]);
+                    }
+                  }
+                }
+              }}
               style={{
-                background: 'white',
+                background: selectedIds.includes(item.id) ? '#eff6ff' : 'white',
                 borderRadius: '20px',
                 padding: '1.5rem',
-                boxShadow: '0 10px 30px rgba(15, 23, 42, 0.04)',
-                border: item.status === 'SELESAI' ? '1px solid #bbf7d0' : '1px solid #f1f5f9',
+                boxShadow: selectedIds.includes(item.id) ? '0 10px 30px rgba(37, 99, 235, 0.15)' : '0 10px 30px rgba(15, 23, 42, 0.04)',
+                border: selectedIds.includes(item.id) ? '2px solid #2563eb' : (item.status === 'SELESAI' ? '1px solid #bbf7d0' : '1px solid #f1f5f9'),
                 display: 'grid',
                 gap: '1rem',
+                position: 'relative',
+                transition: 'all 0.2s ease',
+                cursor: (!isAdmin && isSelectionMode && item.status === 'PENDING') ? 'pointer' : (!isAdmin && isSelectionMode ? 'not-allowed' : 'default'),
+                opacity: (!isAdmin && isSelectionMode && item.status !== 'PENDING') ? 0.5 : ((!isAdmin && isSelectionMode && !selectedIds.includes(item.id)) ? 0.8 : 1),
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
@@ -438,7 +486,18 @@ export default function ReportsPage() {
                       </span>
                     )}
                   </div>
-                  <h2 style={{ fontSize: '1.3rem', margin: 0 }}>{item.title}</h2>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem' }}>
+                    <h2 style={{ fontSize: '1.3rem', margin: 0 }}>{item.title}</h2>
+                    {!isAdmin && isSelectionMode && item.status === 'PENDING' && (
+                      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '0.2rem' }}>
+                        {selectedIds.includes(item.id) ? (
+                          <CheckCircle2 size={24} color="#2563eb" fill="#eff6ff" />
+                        ) : (
+                          <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '2px solid #cbd5e1' }} />
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div style={{ textAlign: 'right', fontSize: '0.825rem', color: '#94a3b8' }}>
@@ -510,41 +569,44 @@ export default function ReportsPage() {
                 );
               })()}
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid #f1f5f9', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <button
                   type="button"
-                  onClick={() => handleOpenDetail(item.id)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600 }}
+                  onClick={(e) => { e.stopPropagation(); handleOpenDetail(item.id); }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', color: '#0f172a', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
                 >
-                  <Search size={14} /> Detail
+                  <Search size={14} /> Lihat Detail
                 </button>
-                {isAdmin ? (
-                  item.status === 'SELESAI' ? (
-                    <button
-                      disabled
-                      type="button"
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.875rem', fontWeight: 600, cursor: 'not-allowed' }}
-                    >
-                      <Lock size={14} /> Status Selesai (Final)
-                    </button>
+                {!isSelectionMode && (
+                  isAdmin ? (
+                    item.status === 'SELESAI' ? (
+                      <button
+                        disabled
+                        type="button"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.875rem', fontWeight: 600, cursor: 'not-allowed' }}
+                      >
+                        <Lock size={14} /> Status Selesai (Final)
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); handleOpenStatusModal(item); }}
+                        style={{ background: '#0f172a', color: 'white', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                      >
+                        Ubah Status Laporan
+                      </button>
+                    )
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => handleOpenStatusModal(item)}
-                      style={{ background: '#0f172a', color: 'white', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600 }}
-                    >
-                      Ubah Status Laporan
-                    </button>
-                  )
-                ) : (
-                  item.status === 'PENDING' && (
-                    <button
-                      type="button"
-                      onClick={() => setReportToDelete(item)}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600 }}
-                    >
-                      <Trash2 size={14} /> Hapus Laporan
-                    </button>
+                    item.status === 'PENDING' && (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setReportToDelete(item); }}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                      >
+                        <Trash2 size={14} /> Hapus Laporan
+                      </button>
+                    )
                   )
                 )}
               </div>
@@ -824,18 +886,63 @@ export default function ReportsPage() {
           </div>
         </div>
       )}
+      {!isAdmin && isSelectionMode && selectedIds.length > 0 && (
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'white',
+          padding: '1rem 1.5rem',
+          borderRadius: '16px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1.5rem',
+          zIndex: 100,
+          border: '1px solid #e2e8f0',
+          animation: 'slideUp 0.3s ease'
+        }}>
+          <span style={{ fontWeight: 600, color: '#0f172a' }}>{selectedIds.length} laporan dipilih</span>
+          <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
+          <button
+            onClick={() => {
+              const pendingItems = reports.filter(r => r.status === 'PENDING');
+              if (selectedIds.length === pendingItems.length) setSelectedIds([]);
+              else setSelectedIds(pendingItems.map(e => e.id));
+            }}
+            style={{ background: 'none', border: 'none', color: '#2563eb', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+          >
+            {selectedIds.length === reports.filter(r => r.status === 'PENDING').length ? 'Batal Semua' : 'Pilih Semua'}
+          </button>
+          <button
+            onClick={() => {
+              setIsSelectionMode(false);
+              setSelectedIds([]);
+            }}
+            style={{ background: 'none', border: 'none', color: '#64748b', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+          >
+            Batalkan
+          </button>
+          <button
+            onClick={() => setReportToDelete('BULK')}
+            style={{ background: '#dc2626', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 600, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <Trash2 size={16} /> Hapus
+          </button>
+        </div>
+      )}
 
       <ConfirmModal
         isOpen={!!reportToDelete}
-        title="Hapus Laporan Pengaduan"
-        message="Apakah Anda yakin ingin menghapus laporan ini? Data yang dihapus tidak dapat dikembalikan."
-        confirmText={deleting ? 'Menghapus...' : 'Ya, Hapus'}
+        title={reportToDelete === 'BULK' ? 'Hapus Laporan Terpilih?' : 'Hapus Laporan Pengaduan'}
+        message={reportToDelete === 'BULK' ? `Apakah Anda yakin ingin menghapus ${selectedIds.length} laporan yang dipilih? Data yang dihapus tidak dapat dikembalikan.` : 'Apakah Anda yakin ingin menghapus laporan ini? Data yang dihapus tidak dapat dikembalikan.'}
+        confirmText={deleting ? 'Menghapus...' : (reportToDelete === 'BULK' ? `Ya, Hapus ${selectedIds.length} Laporan` : 'Ya, Hapus')}
         cancelText="Batal"
         onConfirm={handleConfirmDeleteReport}
         onCancel={() => setReportToDelete(null)}
         isDestructive
       />
-
       {showDetailModal && (
         <div className="modal-overlay" onClick={() => { setShowDetailModal(false); setDetailReport(null); }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '650px' }}>
