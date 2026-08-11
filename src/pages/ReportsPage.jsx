@@ -166,8 +166,6 @@ export default function ReportsPage() {
     setModalMessage('');
     try {
       const fileToUpload = await compressAndConvertImage(originalFile);
-
-      // Instant local preview from user's exact file
       const localObjectUrl = URL.createObjectURL(fileToUpload);
       setDevicePreviewUrl(localObjectUrl);
 
@@ -570,7 +568,6 @@ export default function ReportsPage() {
         </div>
       )}
 
-      {/* Modal Buat Laporan Baru (WARGA) */}
       {showCreateModal && (
         <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -728,7 +725,6 @@ export default function ReportsPage() {
                       <ImageIcon size={16} /> Foto Bukti Kegiatan Selesai <span style={{ color: '#dc2626' }}>*</span>
                     </label>
 
-                    {/* Upload from Device */}
                     <div style={{ background: '#ffffff', border: '1px dashed #86efac', padding: '0.75rem', borderRadius: '12px', textAlign: 'center' }}>
                       <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#16a34a', color: 'white', padding: '0.55rem 1.1rem', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem' }}>
                         <Upload size={16} /> Upload Foto Bukti dari Device
@@ -855,7 +851,6 @@ export default function ReportsPage() {
         isDestructive
       />
 
-      {/* Modal Detail Laporan */}
       {showDetailModal && (
         <div className="modal-overlay" onClick={() => { setShowDetailModal(false); setDetailReport(null); }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '650px' }}>

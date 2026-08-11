@@ -320,7 +320,6 @@ export default function AnnouncementsPage() {
         </div>
       )}
 
-      {/* Confirm Modal Hapus Pengumuman */}
       <ConfirmModal
         isOpen={Boolean(itemToDelete)}
         onClose={() => setItemToDelete(null)}

@@ -1,9 +1,3 @@
-/**
- * 
- * 
- * @param {string} url 
- * @returns {string} 
- */
 export function formatImageUrl(url) {
   if (!url || typeof url !== 'string' || !url.trim()) {
     return '';

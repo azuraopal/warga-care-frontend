@@ -20,7 +20,6 @@
   --text-muted: #64748b;
   --border-color: #e2e8f0;
 
-  /* Status Colors */
   --status-pending-bg: #fef3c7;
   --status-pending-text: #92400e;
   --status-diproses-bg: #e0f2fe;
@@ -74,7 +73,6 @@ img {
   max-width: 100%;
 }
 
-/* Badge Utilities */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -124,7 +122,6 @@ img {
   border: 1px solid #fde68a;
 }
 
-/* Modal Backdrop */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -160,7 +157,6 @@ img {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Common form input style */
 .form-input, .form-select, .form-textarea {
   width: 100%;
   padding: 0.8rem 1rem;
@@ -328,12 +324,10 @@ img {
   line-height: 1.4;
 }
 
-/* Leaflet z-index fix inside modals */
 .leaflet-container {
   z-index: 1;
 }
 
-/* Spin animation for loader icon */
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -343,7 +337,6 @@ img {
   animation: spin 1s linear infinite;
 }
 
-/* Photo evidence upload in create form */
 .photo-evidence-upload {
   border: 2px dashed #cbd5e1;
   border-radius: 14px;
@@ -395,7 +388,6 @@ img {
   display: block;
 }
 
-/* Mini map for report cards */
 .report-mini-map {
   width: 100%;
   height: 150px;

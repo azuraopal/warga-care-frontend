@@ -26,7 +26,6 @@ export default function LiveChatWidget() {
     const trimmedMessage = inputValue.trim();
     if (!trimmedMessage) return;
 
-    // Add user message
     const newUserMsg = { id: Date.now(), sender: 'user', text: trimmedMessage };
     setMessages((prev) => [...prev, newUserMsg]);
     setInputValue('');
@@ -46,7 +45,6 @@ export default function LiveChatWidget() {
 
   return (
     <>
-      {/* Floating Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -75,7 +73,6 @@ export default function LiveChatWidget() {
         </button>
       )}
 
-      {/* Chat Window */}
       {isOpen && (
         <div
           style={{
@@ -94,7 +91,6 @@ export default function LiveChatWidget() {
             border: '1px solid #e2e8f0'
           }}
         >
-          {/* Header */}
           <div
             style={{
               backgroundColor: '#2563eb',
@@ -129,7 +125,6 @@ export default function LiveChatWidget() {
             </button>
           </div>
 
-          {/* Messages Area */}
           <div
             style={{
               flex: 1,
@@ -210,7 +205,6 @@ export default function LiveChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Area */}
           <form
             onSubmit={handleSendMessage}
             style={{

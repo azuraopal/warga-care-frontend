@@ -95,8 +95,6 @@ function AppShell({ children }) {
         icon={LogOut}
         variant="danger"
       />
-      
-      {/* Live Chat Widget for all authenticated users */}
       {user && <LiveChatWidget />}
     </div>
   )
@@ -183,7 +181,6 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* Public Announcements Section */}
       <div style={{ marginTop: '4.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
           <div>
@@ -233,7 +230,6 @@ function LandingPage() {
         )}
       </div>
 
-      {/* Public Upcoming Events Section */}
       <div style={{ marginTop: '4rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
           <div>

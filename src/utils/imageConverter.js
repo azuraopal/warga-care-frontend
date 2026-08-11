@@ -1,11 +1,5 @@
 import imageCompression from 'browser-image-compression';
 
-/**
- * 
- *
- * @param {File} file 
- * @returns {Promise<File>}
- */
 export async function compressAndConvertImage(file) {
   if (!file) return file;
 

@@ -123,7 +123,6 @@ export default function UsersManagementPage() {
 
   return (
     <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '2.5rem 1.25rem 5rem' }}>
-      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
         <div>
           <span className="badge badge-role-admin" style={{ marginBottom: '0.5rem' }}>
@@ -228,7 +227,6 @@ export default function UsersManagementPage() {
                 </div>
               </div>
 
-              {/* Actions */}
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <button
                   type="button"

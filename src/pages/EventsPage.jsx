@@ -59,8 +59,6 @@ export default function EventsPage() {
     setModalMessage('');
     try {
       const fileToUpload = await compressAndConvertImage(originalFile);
-
-      // Instant local preview from user's exact file
       const localObjectUrl = URL.createObjectURL(fileToUpload);
       setDevicePreviewUrl(localObjectUrl);
 
@@ -349,11 +347,9 @@ export default function EventsPage() {
               </div>
 
               <div>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.9rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.9rem' }}>
                   <ImageIcon size={16} /> Foto Banner Kegiatan
-                </label>
-
-                {/* Device File Upload */}
+                </div>
                 <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', padding: '0.85rem', borderRadius: '12px', marginBottom: '0.75rem', textAlign: 'center' }}>
                   <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.55rem 1.1rem', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem' }}>
                     <Upload size={16} /> Upload Foto dari Device
