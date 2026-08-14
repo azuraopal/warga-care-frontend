@@ -7,7 +7,7 @@ import SearchFilterBar from '../components/ui/SearchFilterBar';
 import LocationPicker from '../components/ui/LocationPicker';
 import { formatImageUrl } from '../utils/image';
 import { compressAndConvertImage } from '../utils/imageConverter';
-import { MapPin, Lightbulb, CheckCircle2, Lock, AlertCircle, Trash2, Plus, Search, Image as ImageIcon, Upload, Camera } from 'lucide-react';
+import { MapPin, Lightbulb, CheckCircle2, Lock, AlertCircle, Trash2, Plus, Search, Image as ImageIcon, Upload, Camera, X, ClipboardList, Megaphone, Calendar } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -43,7 +43,7 @@ const DEFAULT_CATEGORIES = [
 ];
 
 const DEFAULT_STATUSES = [
-  { value: 'PENDING', label: 'Menunggu (Pending)', badgeClass: 'badge-pending' },
+  { value: 'PENDING', label: 'Menunggu', badgeClass: 'badge-pending' },
   { value: 'DIPROSES', label: 'Sedang Diproses', badgeClass: 'badge-diproses' },
   { value: 'SELESAI', label: 'Selesai', badgeClass: 'badge-selesai' },
   { value: 'DITOLAK', label: 'Ditolak', badgeClass: 'badge-ditolak' },
@@ -126,13 +126,21 @@ export default function ReportsPage() {
           }
         }
         if (Array.isArray(stData) && stData.length > 0) {
-          setStatuses(stData.map((s) => ({
-            ...s,
-            badgeClass: s.value === 'PENDING' ? 'badge-pending'
-              : s.value === 'DIPROSES' ? 'badge-diproses'
-              : s.value === 'SELESAI' ? 'badge-selesai'
-              : 'badge-ditolak',
-          })));
+          setStatuses(stData.map((s) => {
+            let label = s.label || s.value;
+            if (s.value === 'PENDING') label = 'Menunggu';
+            if (s.value === 'DIPROSES') label = 'Sedang Diproses';
+            if (s.value === 'SELESAI') label = 'Selesai';
+            if (s.value === 'DITOLAK') label = 'Ditolak';
+            return {
+              ...s,
+              label,
+              badgeClass: s.value === 'PENDING' ? 'badge-pending'
+                : s.value === 'DIPROSES' ? 'badge-diproses'
+                : s.value === 'SELESAI' ? 'badge-selesai'
+                : 'badge-ditolak',
+            };
+          }));
         }
       } catch (err) {
         console.warn('Metadata categories/statuses API fallback:', err);
@@ -332,6 +340,16 @@ export default function ReportsPage() {
     return found ? found.label : cat;
   };
 
+  const filteredReports = reports.filter((item) => {
+    if (!searchKeyword.trim()) return true;
+    const kw = searchKeyword.toLowerCase();
+    return (
+      (item.title && item.title.toLowerCase().includes(kw)) ||
+      (item.description && item.description.toLowerCase().includes(kw)) ||
+      (item.location && item.location.toLowerCase().includes(kw))
+    );
+  });
+
   return (
     <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '2.5rem 1.25rem 5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
@@ -420,7 +438,7 @@ export default function ReportsPage() {
 
       {loading ? (
         <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#64748b' }}>Sedang memuat laporan...</div>
-      ) : reports.length === 0 ? (
+      ) : filteredReports.length === 0 ? (
         <div style={{ background: 'white', padding: '4rem 2rem', borderRadius: '24px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
           <h3 style={{ marginBottom: '0.5rem' }}>Belum ada laporan pengaduan</h3>
           <p style={{ color: '#64748b', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
@@ -438,7 +456,7 @@ export default function ReportsPage() {
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '1.25rem' }}>
-          {reports.map((item) => (
+          {filteredReports.map((item) => (
             <div
               key={item.id}
               onClick={() => {
@@ -509,8 +527,6 @@ export default function ReportsPage() {
                 {item.description}
               </p>
 
-
-
               {isAdmin && (item.reporter || item.user) && (
                 <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '12px', fontSize: '0.875rem', color: '#475569', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                   <span><strong>Pelapor:</strong> {(item.reporter || item.user).fullName || (item.reporter || item.user).email}</span>
@@ -534,7 +550,7 @@ export default function ReportsPage() {
                 return (
                   <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1rem', borderRadius: '16px', display: 'grid', gap: '0.75rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#166534', fontWeight: 700, fontSize: '0.875rem' }}>
-                      <CheckCircle2 size={18} /> Bukti Foto Penanganan Selesai (Final)
+                      <CheckCircle2 size={18} /> Bukti Foto Penanganan Selesai
                     </div>
 
                     {displayPhoto && (
@@ -586,7 +602,7 @@ export default function ReportsPage() {
                         onClick={(e) => e.stopPropagation()}
                         style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.875rem', fontWeight: 600, cursor: 'not-allowed' }}
                       >
-                        <Lock size={14} /> Status Selesai (Final)
+                        <Lock size={14} /> Status Selesai
                       </button>
                     ) : (
                       <button
@@ -602,7 +618,7 @@ export default function ReportsPage() {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setReportToDelete(item); }}
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}
                       >
                         <Trash2 size={14} /> Hapus Laporan
                       </button>
@@ -617,106 +633,120 @@ export default function ReportsPage() {
 
       {showCreateModal && (
         <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ marginTop: 0, marginBottom: '0.5rem' }}>Buat Laporan Pengaduan Baru</h2>
-            <p style={{ color: '#64748b', marginBottom: '1.25rem', fontSize: '0.95rem' }}>
-              Laporkan masalah ketertiban, kebersihan, atau kerusakan fasilitas umum lingkungan RT Anda.
-            </p>
-
-            <form onSubmit={handleCreateSubmit} style={{ display: 'grid', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.9rem' }}>Judul Laporan</label>
-                <input
-                  required
-                  minLength={5}
-                  maxLength={200}
-                  className="form-input"
-                  placeholder="Contoh: Lampu Jalan Mati di Depan Blok B5"
-                  value={createForm.title}
-                  onChange={(e) => setCreateForm((prev) => ({ ...prev, title: e.target.value }))}
-                />
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px' }}>
+            <div className="modal-header">
+              <div className="modal-title-wrapper">
+                <div className="modal-title-icon">
+                  <FileText size={22} />
+                </div>
+                <div>
+                  <h2 className="modal-title">Buat Laporan Pengaduan Baru</h2>
+                  <p className="modal-subtitle">Laporkan masalah ketertiban, kebersihan, atau kerusakan fasilitas di lingkungan RT Anda.</p>
+                </div>
               </div>
+              <button type="button" className="modal-close-btn" onClick={() => setShowCreateModal(false)}>
+                <X size={18} />
+              </button>
+            </div>
 
-              <div>
-                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.9rem' }}>Kategori Laporan</label>
-                <select
-                  className="form-select"
-                  value={createForm.category}
-                  onChange={(e) => setCreateForm((prev) => ({ ...prev, category: e.target.value }))}
-                >
-                  {categories.map((cat) => (
-                    <option key={cat.value} value={cat.value}>{cat.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <LocationPicker
-                latitude={createForm.latitude}
-                longitude={createForm.longitude}
-                location={createForm.location}
-                onLocationChange={({ latitude, longitude, location }) =>
-                  setCreateForm((prev) => ({ ...prev, latitude, longitude, location }))
-                }
-              />
-
-              <div>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.9rem' }}>
-                  <Camera size={16} /> Foto Bukti Kejadian <span style={{ color: '#dc2626' }}>*</span>
-                </label>
-                <div className="photo-evidence-upload">
-                  <label className="photo-evidence-upload__btn">
-                    <Upload size={16} /> Upload Foto Bukti dari Device
-                    <input
-                      type="file"
-                      accept="image/*,.heic,.heif,.webp,.avif"
-                      onChange={handlePhotoUpload}
-                      style={{ display: 'none' }}
-                    />
+            <form onSubmit={handleCreateSubmit}>
+              <div className="modal-body" style={{ display: 'grid', gap: '1.25rem' }}>
+                <div className="form-group">
+                  <label className="form-label">
+                    Judul Laporan <span className="form-label-required">*</span>
                   </label>
-                  {uploadingPhoto && (
-                    <span style={{ display: 'block', fontSize: '0.8rem', color: '#2563eb', marginTop: '0.5rem', fontWeight: 600 }}>Meng-upload foto ke server...</span>
-                  )}
-                  <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginTop: '0.35rem' }}>
-                    Upload foto kondisi jalan rusak / masalah yang dilaporkan sebagai bukti.
-                  </span>
-                  {(photoPreviewUrl || createForm.photoEvidence) && (
-                    <div className="photo-evidence-preview">
-                      <img
-                        src={photoPreviewUrl || formatImageUrl(createForm.photoEvidence)}
-                        alt="Preview Foto Bukti"
-                        onError={(e) => { e.target.style.display = 'none'; }}
+                  <input
+                    required
+                    minLength={5}
+                    maxLength={200}
+                    className="form-input"
+                    placeholder="Contoh: Lampu Jalan Mati di Depan Blok B5"
+                    value={createForm.title}
+                    onChange={(e) => setCreateForm((prev) => ({ ...prev, title: e.target.value }))}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Kategori Laporan</label>
+                  <select
+                    className="form-select"
+                    value={createForm.category}
+                    onChange={(e) => setCreateForm((prev) => ({ ...prev, category: e.target.value }))}
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat.value} value={cat.value}>{cat.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <LocationPicker
+                  latitude={createForm.latitude}
+                  longitude={createForm.longitude}
+                  location={createForm.location}
+                  onLocationChange={({ latitude, longitude, location }) =>
+                    setCreateForm((prev) => ({ ...prev, latitude, longitude, location }))
+                  }
+                />
+
+                <div className="form-group">
+                  <label className="form-label">
+                    <Camera size={16} /> Foto Bukti Kejadian <span className="form-label-required">*</span>
+                  </label>
+                  <div className="photo-evidence-upload">
+                    <label className="photo-evidence-upload__btn">
+                      <Upload size={16} /> Upload Foto Bukti dari Device
+                      <input
+                        type="file"
+                        accept="image/*,.heic,.heif,.webp,.avif"
+                        onChange={handlePhotoUpload}
+                        style={{ display: 'none' }}
                       />
-                    </div>
-                  )}
+                    </label>
+                    {uploadingPhoto && (
+                      <span style={{ display: 'block', fontSize: '0.8rem', color: '#2563eb', marginTop: '0.5rem', fontWeight: 600 }}>Meng-upload foto ke server...</span>
+                    )}
+                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginTop: '0.35rem' }}>
+                      Upload foto kondisi jalan rusak / masalah yang dilaporkan sebagai bukti.
+                    </span>
+                    {(photoPreviewUrl || createForm.photoEvidence) && (
+                      <div className="photo-evidence-preview">
+                        <img
+                          src={photoPreviewUrl || formatImageUrl(createForm.photoEvidence)}
+                          alt="Preview Foto Bukti"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Deskripsi Rinci</label>
+                  <textarea
+                    required
+                    rows={4}
+                    minLength={10}
+                    maxLength={5000}
+                    className="form-textarea"
+                    placeholder="Jelaskan detail masalah yang dilaporkan secara rinci..."
+                    value={createForm.description}
+                    onChange={(e) => setCreateForm((prev) => ({ ...prev, description: e.target.value }))}
+                  />
                 </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.9rem' }}>Deskripsi Rinci</label>
-                <textarea
-                  required
-                  rows={4}
-                  minLength={10}
-                  maxLength={5000}
-                  className="form-textarea"
-                  placeholder="Jelaskan detail masalah yang dilaporkan secara rinci..."
-                  value={createForm.description}
-                  onChange={(e) => setCreateForm((prev) => ({ ...prev, description: e.target.value }))}
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <div className="modal-footer">
                 <button
                   type="button"
+                  className="btn-secondary"
                   onClick={() => setShowCreateModal(false)}
-                  style={{ padding: '0.75rem 1.25rem', borderRadius: '999px', border: '1px solid #cbd5e1', fontWeight: 600 }}
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  style={{ background: '#2563eb', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '999px', fontWeight: 700 }}
+                  className="btn-primary"
                 >
                   {submitting ? 'Mengirim...' : 'Kirim Laporan'}
                 </button>
@@ -728,156 +758,159 @@ export default function ReportsPage() {
 
       {showStatusModal && selectedReport && (
         <div className="modal-overlay" onClick={() => setShowStatusModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ marginTop: 0, marginBottom: '0.5rem' }}>Ubah Status Laporan</h2>
-            <p style={{ color: '#64748b', marginBottom: '1.25rem', fontSize: '0.95rem' }}>
-              Ubah status untuk laporan: <strong>"{selectedReport.title}"</strong>
-            </p>
-
-            {modalMessage && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '0.75rem 1rem', borderRadius: '12px', marginBottom: '1rem', fontSize: '0.875rem' }}>
-                <CheckCircle2 size={16} /> {modalMessage}
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '560px' }}>
+            <div className="modal-header">
+              <div className="modal-title-wrapper">
+                <div className="modal-title-icon">
+                  <ClipboardList size={22} />
+                </div>
+                <div>
+                  <h2 className="modal-title">Ubah Status Laporan</h2>
+                  <p className="modal-subtitle">
+                    Laporan: <strong>"{selectedReport.title}"</strong>
+                  </p>
+                </div>
               </div>
-            )}
+              <button type="button" className="modal-close-btn" onClick={() => setShowStatusModal(false)}>
+                <X size={18} />
+              </button>
+            </div>
 
-            <form onSubmit={handleUpdateStatusSubmit} style={{ display: 'grid', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.9rem' }}>Pilih Status Baru</label>
-                <select
-                  className="form-select"
-                  value={statusForm.status}
-                  onChange={(e) => setStatusForm((prev) => ({ ...prev, status: e.target.value }))}
-                >
-                  {statuses.map((st) => (
-                    <option key={st.value} value={st.value}>{st.label}</option>
-                  ))}
-                </select>
-              </div>
+            <form onSubmit={handleUpdateStatusSubmit}>
+              <div className="modal-body" style={{ display: 'grid', gap: '1.25rem' }}>
+                {modalMessage && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '0.75rem 1rem', borderRadius: '12px', fontSize: '0.875rem' }}>
+                    <CheckCircle2 size={16} /> {modalMessage}
+                  </div>
+                )}
 
-              <div>
-                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.9rem' }}>Catatan Pengurus RT (Opsional)</label>
-                <textarea
-                  className="form-input"
-                  rows={2}
-                  placeholder="Beri penjelasan perkembangan penanganan laporan..."
-                  value={statusForm.adminNotes}
-                  onChange={(e) => setStatusForm((prev) => ({ ...prev, adminNotes: e.target.value }))}
-                />
-              </div>
+                <div className="form-group">
+                  <label className="form-label">
+                    Pilih Status Baru <span className="form-label-required">*</span>
+                  </label>
+                  <select
+                    className="form-select"
+                    value={statusForm.status}
+                    onChange={(e) => setStatusForm((prev) => ({ ...prev, status: e.target.value }))}
+                  >
+                    {statuses.map((st) => (
+                      <option key={st.value} value={st.value}>{st.label}</option>
+                    ))}
+                  </select>
+                </div>
 
-              {statusForm.status === 'SELESAI' && (
-                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1rem', borderRadius: '16px', display: 'grid', gap: '0.85rem' }}>
-                  <div>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700, color: '#166534', marginBottom: '0.35rem', fontSize: '0.9rem' }}>
-                      <ImageIcon size={16} /> Foto Bukti Kegiatan Selesai <span style={{ color: '#dc2626' }}>*</span>
-                    </label>
+                <div className="form-group">
+                  <label className="form-label">Catatan Pengurus RT (Opsional)</label>
+                  <textarea
+                    className="form-input"
+                    rows={2}
+                    placeholder="Beri penjelasan perkembangan penanganan laporan..."
+                    value={statusForm.adminNotes}
+                    onChange={(e) => setStatusForm((prev) => ({ ...prev, adminNotes: e.target.value }))}
+                  />
+                </div>
 
-                    <div style={{ background: '#ffffff', border: '1px dashed #86efac', padding: '0.75rem', borderRadius: '12px', textAlign: 'center' }}>
-                      <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#16a34a', color: 'white', padding: '0.55rem 1.1rem', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem' }}>
-                        <Upload size={16} /> Upload Foto Bukti dari Device
-                        <input
-                          type="file"
-                          accept="image/*,.heic,.heif,.webp,.avif"
-                          onChange={handleEvidenceFileUpload}
-                          style={{ display: 'none' }}
-                        />
+                {statusForm.status === 'SELESAI' && (
+                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1rem', borderRadius: '16px', display: 'grid', gap: '0.85rem' }}>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700, color: '#166534', marginBottom: '0.35rem', fontSize: '0.9rem' }}>
+                        <ImageIcon size={16} /> Foto Bukti Penanganan Selesai <span style={{ color: '#dc2626' }}>*</span>
                       </label>
-                      {uploadingEvidence && <span style={{ display: 'block', fontSize: '0.8rem', color: '#15803d', marginTop: '0.4rem', fontWeight: 600 }}>Meng-upload foto ke server...</span>}
-                      <span style={{ display: 'block', fontSize: '0.75rem', color: '#166534', marginTop: '0.3rem' }}>Pilih foto hasil perbaikan dari laptop / HP Anda.</span>
-                    </div>
-                  </div>
 
-                  <div>
-                    <span style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>
-                      Atau Pilih Foto Sampel Cepat:
-                    </span>
-                    <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                      {SAMPLE_EVIDENCE_PHOTOS.map((item, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => {
-                            setDevicePreviewUrl('');
-                            setStatusForm((prev) => ({ ...prev, evidencePhoto: item.url }));
-                          }}
-                          style={{
-                            padding: '0.35rem 0.65rem',
-                            borderRadius: '8px',
-                            border: (!devicePreviewUrl && statusForm.evidencePhoto === item.url) ? '2px solid #16a34a' : '1px solid #bbf7d0',
-                            background: (!devicePreviewUrl && statusForm.evidencePhoto === item.url) ? '#dcfce7' : 'white',
-                            fontSize: '0.8rem',
-                            fontWeight: 600,
-                            color: '#15803d',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {(devicePreviewUrl || statusForm.evidencePhoto) && (
-                    <div style={{ padding: '0.65rem', background: '#ffffff', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
-                      <div style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 700, marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <ImageIcon size={15} style={{ color: '#16a34a' }} /> Pratinjau (Preview) Foto Bukti:
+                      <div style={{ background: '#ffffff', border: '1px dashed #86efac', padding: '0.75rem', borderRadius: '12px', textAlign: 'center' }}>
+                        <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#16a34a', color: 'white', padding: '0.55rem 1.1rem', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem' }}>
+                          <Upload size={16} /> Upload Foto Bukti dari Device
+                          <input
+                            type="file"
+                            accept="image/*,.heic,.heif,.webp,.avif"
+                            onChange={handleEvidenceFileUpload}
+                            style={{ display: 'none' }}
+                          />
+                        </label>
+                        {uploadingEvidence && <span style={{ display: 'block', fontSize: '0.8rem', color: '#15803d', marginTop: '0.4rem', fontWeight: 600 }}>Meng-upload foto ke server...</span>}
+                        <span style={{ display: 'block', fontSize: '0.75rem', color: '#166534', marginTop: '0.3rem' }}>Pilih foto hasil perbaikan dari laptop / HP Anda.</span>
                       </div>
-                      <div style={{ width: '100%', height: '160px', borderRadius: '8px', overflow: 'hidden', background: '#e2e8f0', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                        <img
-                          key={devicePreviewUrl || statusForm.evidencePhoto}
-                          src={devicePreviewUrl || formatImageUrl(statusForm.evidencePhoto)}
-                          alt="Preview Foto Bukti"
-                          style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block', position: 'absolute', top: 0, left: 0 }}
-                          onLoad={(e) => {
-                            e.target.style.display = 'block';
-                            if (e.target.nextSibling) e.target.nextSibling.style.display = 'none';
-                          }}
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
-                          }}
-                        />
-                        <div style={{ display: 'none', flexDirection: 'column', alignItems: 'center', gap: '0.3rem', color: '#64748b' }}>
-                          <CheckCircle2 size={28} style={{ color: '#16a34a' }} />
-                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#15803d' }}>Foto berhasil diupload!</span>
-                          <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Format ini tidak bisa di-preview di browser</span>
+                    </div>
+
+                    <div>
+                      <span style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>
+                        Atau Pilih Foto Sampel Cepat:
+                      </span>
+                      <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                        {SAMPLE_EVIDENCE_PHOTOS.map((item, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              setDevicePreviewUrl('');
+                              setStatusForm((prev) => ({ ...prev, evidencePhoto: item.url }));
+                            }}
+                            style={{
+                              padding: '0.35rem 0.65rem',
+                              borderRadius: '8px',
+                              border: (!devicePreviewUrl && statusForm.evidencePhoto === item.url) ? '2px solid #16a34a' : '1px solid #bbf7d0',
+                              background: (!devicePreviewUrl && statusForm.evidencePhoto === item.url) ? '#dcfce7' : 'white',
+                              fontSize: '0.8rem',
+                              fontWeight: 600,
+                              color: '#15803d',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {item.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {(devicePreviewUrl || statusForm.evidencePhoto) && (
+                      <div style={{ padding: '0.65rem', background: '#ffffff', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+                        <div style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 700, marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <ImageIcon size={15} style={{ color: '#16a34a' }} /> Pratinjau Foto Bukti:
+                        </div>
+                        <div style={{ width: '100%', height: '150px', borderRadius: '8px', overflow: 'hidden', background: '#e2e8f0', border: '1px solid #bbf7d0', position: 'relative' }}>
+                          <img
+                            src={devicePreviewUrl || formatImageUrl(statusForm.evidencePhoto)}
+                            alt="Preview Foto Bukti"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
                         </div>
                       </div>
+                    )}
+
+                    <div className="form-group">
+                      <label style={{ display: 'block', fontWeight: 700, color: '#166534', marginBottom: '0.35rem', fontSize: '0.9rem' }}>
+                        Keterangan Hasil Perbaikan / Penanganan
+                      </label>
+                      <textarea
+                        required
+                        className="form-textarea"
+                        rows={3}
+                        placeholder="Tuliskan detail pekerjaan penanganan yang telah selesai dilakukan..."
+                        value={statusForm.evidenceNotes}
+                        onChange={(e) => setStatusForm((prev) => ({ ...prev, evidenceNotes: e.target.value }))}
+                      />
                     </div>
-                  )}
 
-                  <div>
-                    <label style={{ display: 'block', fontWeight: 700, color: '#166534', marginBottom: '0.35rem', fontSize: '0.9rem' }}>
-                      Keterangan Hasil Perbaikan / Gotong Royong
-                    </label>
-                    <textarea
-                      required
-                      className="form-textarea"
-                      rows={3}
-                      placeholder="Tuliskan detail pekerjaan penanganan yang telah selesai dilakukan..."
-                      value={statusForm.evidenceNotes}
-                      onChange={(e) => setStatusForm((prev) => ({ ...prev, evidenceNotes: e.target.value }))}
-                    />
+                    <span style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 600 }}>
+                      ⚠️ Setelah status disimpan sebagai SELESAI, status laporan akan dikunci permanen.
+                    </span>
                   </div>
+                )}
+              </div>
 
-                  <span style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 600 }}>
-                    ⚠️ Setelah status disimpan sebagai SELESAI, status laporan akan dikunci permanen (Final).
-                  </span>
-                </div>
-              )}
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <div className="modal-footer">
                 <button
                   type="button"
+                  className="btn-secondary"
                   onClick={() => setShowStatusModal(false)}
-                  style={{ padding: '0.75rem 1.25rem', borderRadius: '999px', border: '1px solid #cbd5e1', fontWeight: 600 }}
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  style={{ background: '#0f172a', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '999px', fontWeight: 700 }}
+                  className="btn-primary"
                 >
                   {submitting ? 'Memproses...' : 'Simpan Status'}
                 </button>
@@ -937,53 +970,73 @@ export default function ReportsPage() {
         isOpen={!!reportToDelete}
         title={reportToDelete === 'BULK' ? 'Hapus Laporan Terpilih?' : 'Hapus Laporan Pengaduan'}
         message={reportToDelete === 'BULK' ? `Apakah Anda yakin ingin menghapus ${selectedIds.length} laporan yang dipilih? Data yang dihapus tidak dapat dikembalikan.` : 'Apakah Anda yakin ingin menghapus laporan ini? Data yang dihapus tidak dapat dikembalikan.'}
-        confirmText={deleting ? 'Menghapus...' : (reportToDelete === 'BULK' ? `Ya, Hapus ${selectedIds.length} Laporan` : 'Ya, Hapus')}
-        cancelText="Batal"
+        confirmText={reportToDelete === 'BULK' ? `Ya, Hapus ${selectedIds.length} Laporan` : 'Ya, Hapus'}
         onConfirm={handleConfirmDeleteReport}
-        onCancel={() => setReportToDelete(null)}
-        isDestructive
+        onClose={() => setReportToDelete(null)}
+        icon={Trash2}
+        variant="danger"
+        loading={deleting}
       />
       {showDetailModal && (
         <div className="modal-overlay" onClick={() => { setShowDetailModal(false); setDetailReport(null); }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '650px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
-              <h2 style={{ margin: 0 }}>Detail Laporan Pengaduan</h2>
-              <button onClick={() => { setShowDetailModal(false); setDetailReport(null); }} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b' }}>&times;</button>
+            <div className="modal-header">
+              <div className="modal-title-wrapper">
+                <div className="modal-title-icon" style={{ background: '#eff6ff', color: '#2563eb' }}>
+                  <Megaphone size={22} />
+                </div>
+                <div>
+                  <h2 className="modal-title">Detail Laporan Warga</h2>
+                  <p className="modal-subtitle">ID Laporan: #{detailReport?.id}</p>
+                </div>
+              </div>
+              <button type="button" className="modal-close-btn" onClick={() => { setShowDetailModal(false); setDetailReport(null); }}>
+                <X size={18} />
+              </button>
             </div>
             
             {loadingDetail ? (
-              <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748b' }}>Sedang memuat detail...</div>
+              <div className="modal-body" style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748b' }}>
+                Sedang memuat detail...
+              </div>
             ) : detailReport ? (
-              <div style={{ display: 'grid', gap: '1.25rem' }}>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                  {getStatusBadge(detailReport.status)}
-                  <span style={{ fontSize: '0.85rem', background: '#f1f5f9', padding: '0.3rem 0.75rem', borderRadius: '8px', color: '#475569', fontWeight: 600 }}>
-                    {getCategoryLabel(detailReport.category)}
-                  </span>
-                  <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+              <div className="modal-body" style={{ display: 'grid', gap: '1.25rem', padding: '1.5rem 1.75rem' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.85rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    {getStatusBadge(detailReport.status)}
+                    <span style={{ fontSize: '0.85rem', background: '#f1f5f9', padding: '0.3rem 0.75rem', borderRadius: '8px', color: '#475569', fontWeight: 600 }}>
+                      {getCategoryLabel(detailReport.category)}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.85rem', color: '#94a3b8', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <Calendar size={14} />
                     {detailReport.createdAt ? new Date(detailReport.createdAt).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }) : ''}
                   </span>
                 </div>
                 
-                <h3 style={{ margin: 0, fontSize: '1.4rem' }}>{detailReport.title}</h3>
+                <h3 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', lineHeight: '1.4' }}>{detailReport.title}</h3>
                 
                 {detailReport.location && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#64748b', fontSize: '0.9rem', backgroundColor: '#f8fafc', padding: '0.5rem 0.75rem', borderRadius: '8px' }}>
-                    <MapPin size={16} /> {detailReport.location}
-                    {detailReport.latitude && detailReport.longitude && (
-                      <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'monospace', marginLeft: '0.5rem' }}>
-                        ({detailReport.latitude.toFixed(6)}, {detailReport.longitude.toFixed(6)})
-                      </span>
-                    )}
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', color: '#334155', fontSize: '0.9rem', backgroundColor: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                    <MapPin size={18} style={{ color: '#2563eb', flexShrink: 0, marginTop: '2px' }} />
+                    <div>
+                      <strong style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.15rem' }}>Lokasi Kejadian</strong>
+                      <span>{detailReport.location}</span>
+                      {detailReport.latitude && detailReport.longitude && (
+                        <span style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'monospace', marginTop: '0.25rem' }}>
+                          ({detailReport.latitude.toFixed(6)}, {detailReport.longitude.toFixed(6)})
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
 
                 {detailReport.latitude && detailReport.longitude && (
                   <div style={{ display: 'grid', gap: '0.5rem' }}>
-                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <MapPin size={16} /> Lokasi di Peta
+                    <h4 style={{ margin: 0, fontSize: '0.9rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Lokasi di Peta
                     </h4>
-                    <div className="report-detail-map">
+                    <div className="report-detail-map" style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid #e2e8f0', height: '220px' }}>
                       <MapContainer
                         center={[detailReport.latitude, detailReport.longitude]}
                         zoom={17}
@@ -1003,66 +1056,100 @@ export default function ReportsPage() {
 
                 {detailReport.photoEvidence && (
                   <div style={{ display: 'grid', gap: '0.5rem' }}>
-                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <Camera size={16} /> Foto Bukti Pengaduan
+                    <h4 style={{ margin: 0, fontSize: '0.9rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Foto Bukti Pengaduan
                     </h4>
-                    <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                    <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid #e2e8f0', background: '#f8fafc' }}>
                       <img
                         src={formatImageUrl(detailReport.photoEvidence)}
                         alt="Foto Bukti Pengaduan"
-                        style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', background: '#f1f5f9' }}
+                        style={{ width: '100%', maxHeight: '350px', objectFit: 'contain', display: 'block' }}
                       />
                     </div>
                   </div>
                 )}
                 
-                <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                  <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.95rem', color: '#0f172a' }}>Deskripsi Masalah:</h4>
-                  <p style={{ margin: 0, color: '#334155', lineHeight: '1.6', whiteSpace: 'pre-line' }}>{detailReport.description}</p>
+                <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                  <strong style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>Deskripsi Masalah</strong>
+                  <p style={{ margin: 0, color: '#1e293b', lineHeight: '1.7', whiteSpace: 'pre-line', fontSize: '0.95rem' }}>{detailReport.description}</p>
                 </div>
 
                 {(detailReport.reporter || detailReport.user) && (
-                  <div style={{ background: '#f1f5f9', padding: '0.85rem 1rem', borderRadius: '12px', fontSize: '0.9rem', color: '#334155', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem' }}>
-                    <div><span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>Dilaporkan Oleh</span><strong>{(detailReport.reporter || detailReport.user).fullName || (detailReport.reporter || detailReport.user).email}</strong></div>
-                    {(detailReport.reporter || detailReport.user).rt && <div><span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>RT</span><strong>{(detailReport.reporter || detailReport.user).rt}</strong></div>}
-                    {(detailReport.reporter || detailReport.user).rw && <div><span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>RW</span><strong>{(detailReport.reporter || detailReport.user).rw}</strong></div>}
+                  <div style={{ background: '#f1f5f9', padding: '1rem 1.25rem', borderRadius: '16px', fontSize: '0.9rem', color: '#334155', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
+                    <div>
+                      <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Dilaporkan Oleh</span>
+                      <strong>{(detailReport.reporter || detailReport.user).fullName || (detailReport.reporter || detailReport.user).email}</strong>
+                    </div>
+                    {(detailReport.reporter || detailReport.user).rt && (
+                      <div>
+                        <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>RT</span>
+                        <strong>{(detailReport.reporter || detailReport.user).rt}</strong>
+                      </div>
+                    )}
+                    {(detailReport.reporter || detailReport.user).rw && (
+                      <div>
+                        <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>RW</span>
+                        <strong>{(detailReport.reporter || detailReport.user).rw}</strong>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {detailReport.adminNotes && (
-                  <div style={{ background: '#fffbe8', border: '1px solid #fef08a', padding: '1rem', borderRadius: '12px', color: '#854d0e' }}>
-                    <h4 style={{ margin: '0 0 0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem' }}>
+                  <div style={{ background: '#fffbe8', border: '1px solid #fef08a', padding: '1.25rem', borderRadius: '16px', color: '#854d0e' }}>
+                    <h4 style={{ margin: '0 0 0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem', fontWeight: 700 }}>
                       <Lightbulb size={18} style={{ color: '#ca8a04' }} /> Catatan Pengurus RT
                     </h4>
-                    <p style={{ margin: 0, lineHeight: '1.5' }}>{detailReport.adminNotes}</p>
+                    <p style={{ margin: 0, lineHeight: '1.6', fontSize: '0.95rem' }}>{detailReport.adminNotes}</p>
                   </div>
                 )}
 
                 {detailReport.status === 'SELESAI' && (() => {
                   const { photoUrl, notes } = parseCompletionEvidence(detailReport.completionEvidence);
                   return (
-                    <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1rem', borderRadius: '12px' }}>
-                      <h4 style={{ margin: '0 0 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#166534', fontSize: '0.95rem' }}>
-                        <CheckCircle2 size={18} /> Bukti Penyelesaian
+                    <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '1.25rem', borderRadius: '16px' }}>
+                      <h4 style={{ margin: '0 0 0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#166534', fontSize: '0.95rem', fontWeight: 700 }}>
+                        <CheckCircle2 size={18} /> Bukti Penyelesaian Laporan
                       </h4>
                       {photoUrl && (
-                        <div style={{ marginBottom: '0.75rem', borderRadius: '8px', overflow: 'hidden' }}>
-                          <img src={formatImageUrl(photoUrl)} alt="Bukti Selesai" style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', background: '#000' }} />
+                        <div style={{ marginBottom: '0.75rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid #bbf7d0' }}>
+                          <img src={formatImageUrl(photoUrl)} alt="Bukti Selesai" style={{ width: '100%', maxHeight: '350px', objectFit: 'contain', background: '#000' }} />
                         </div>
                       )}
-                      {notes && <p style={{ margin: 0, color: '#15803d', lineHeight: '1.5', whiteSpace: 'pre-line' }}>{notes}</p>}
+                      {notes && <p style={{ margin: 0, color: '#15803d', lineHeight: '1.6', fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{notes}</p>}
                     </div>
                   );
                 })()}
               </div>
             ) : (
-              <div style={{ color: '#dc2626', textAlign: 'center', padding: '2rem' }}>Laporan tidak ditemukan.</div>
+              <div className="modal-body" style={{ color: '#dc2626', textAlign: 'center', padding: '2.5rem' }}>
+                Laporan tidak ditemukan.
+              </div>
             )}
             
-            <div style={{ marginTop: '1.5rem', textAlign: 'right', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+            <div className="modal-footer">
               <button type="button" onClick={() => { setShowDetailModal(false); setDetailReport(null); }} className="btn btn-secondary">
                 Tutup
               </button>
+              {isAdmin && detailReport && detailReport.status !== 'SELESAI' && (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setSelectedReport(detailReport);
+                    setStatusForm({
+                      status: detailReport.status,
+                      adminNotes: detailReport.adminNotes || '',
+                      evidencePhoto: '',
+                      evidenceNotes: ''
+                    });
+                    setShowStatusModal(true);
+                    setShowDetailModal(false);
+                  }}
+                >
+                  Ubah Status Laporan
+                </button>
+              )}
             </div>
           </div>
         </div>

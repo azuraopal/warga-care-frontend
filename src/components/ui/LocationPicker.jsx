@@ -92,7 +92,7 @@ export default function LocationPicker({
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     }
-  }, []);
+  }, [readOnly, position]);
 
   const handleMapClick = async (latlng) => {
     if (readOnly) return;

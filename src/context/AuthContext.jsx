@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
     if (token) {
       authApi.getMe()
         .then((res) => {
-          const userData = res.data;
+          const userData = res?.data?.user || res?.user || res?.data || res;
           setUser(userData);
           localStorage.setItem('wc_user', JSON.stringify(userData));
         })
@@ -30,7 +30,9 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const res = await authApi.login({ email, password });
-    const { accessToken, user: userData } = res.data;
+    const resData = res?.data || res;
+    const accessToken = resData?.accessToken || resData?.token || res?.accessToken;
+    const userData = resData?.user || resData;
     setToken(accessToken);
     setUser(userData);
     localStorage.setItem('wc_token', accessToken);
@@ -40,7 +42,9 @@ export function AuthProvider({ children }) {
 
   const register = async (data) => {
     const res = await authApi.register(data);
-    const { accessToken, user: userData } = res.data;
+    const resData = res?.data || res;
+    const accessToken = resData?.accessToken || resData?.token || res?.accessToken;
+    const userData = resData?.user || resData;
     setToken(accessToken);
     setUser(userData);
     localStorage.setItem('wc_token', accessToken);
