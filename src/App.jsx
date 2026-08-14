@@ -68,14 +68,6 @@ function AppShell({ children }) {
               </>
             ) : (
               <>
-                <NavLink to="/" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', fontWeight: 600, fontSize: '0.9rem' })}>Beranda</NavLink>
-                <button
-                  type="button"
-                  onClick={openChatbot}
-                  style={{ padding: '0.55rem 0.95rem', borderRadius: '999px', color: 'white', background: 'linear-gradient(135deg, #1d4ed8, #2563eb)', border: 'none', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)' }}
-                >
-                  Tanya AI
-                </button>
                 <NavLink to="/login" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', fontWeight: 600, fontSize: '0.9rem' })}>Masuk</NavLink>
                 <NavLink to="/register" style={{ padding: '0.55rem 1.1rem', borderRadius: '999px', background: '#2563eb', color: 'white', fontWeight: 700, fontSize: '0.9rem' }}>Daftar</NavLink>
               </>
@@ -186,13 +178,6 @@ function LandingPage() {
             <Link to="/login" style={{ padding: '0.85rem 1.5rem', borderRadius: '999px', background: 'white', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: 700 }}>
               Masuk ke Akun
             </Link>
-            <button
-              type="button"
-              onClick={openChatbot}
-              style={{ padding: '0.85rem 1.5rem', borderRadius: '999px', background: 'linear-gradient(135deg, #1d4ed8, #2563eb)', color: 'white', fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 10px 25px rgba(37, 99, 235, 0.28)' }}
-            >
-              Tanya AI Sekarang
-            </button>
           </div>
         </div>
 

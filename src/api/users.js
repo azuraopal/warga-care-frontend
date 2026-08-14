@@ -6,5 +6,7 @@ export const usersApi = {
   create: (data) => api.post('/users', data),
   updateRole: (id, role) => api.patch(`/users/${id}/role`, { role }),
   updateStatus: (id, isActive) => api.patch(`/users/${id}/status`, { isActive }),
+  deactivate: (id) => api.patch(`/users/${id}/status`, { isActive: false }),
+  activate: (id) => api.patch(`/users/${id}/status`, { isActive: true }),
   delete: (id) => api.delete(`/users/${id}`),
 };

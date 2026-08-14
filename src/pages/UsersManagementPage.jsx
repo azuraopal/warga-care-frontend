@@ -101,11 +101,11 @@ export default function UsersManagementPage() {
         await usersApi.activate(userToToggleStatus.id);
         setActionMessage(`Akun ${userToToggleStatus.fullName || userToToggleStatus.email} berhasil diaktifkan kembali.`);
       }
-      setUserToToggleStatus(null);
       fetchUsers();
     } catch (err) {
       setError(err?.message || 'Gagal mengubah status akun.');
     } finally {
+      setUserToToggleStatus(null);
       setProcessingAction(false);
     }
   };
