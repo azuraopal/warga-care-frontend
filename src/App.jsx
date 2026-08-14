@@ -129,11 +129,8 @@ function LandingPage() {
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
 
-  if (user) {
-    return <Navigate to="/dashboard" replace />
-  }
-
   useEffect(() => {
+    if (user) return
     const fetchPublicData = async () => {
       try {
         const [annRes, evRes] = await Promise.all([
@@ -151,7 +148,11 @@ function LandingPage() {
       }
     }
     fetchPublicData()
-  }, [])
+  }, [user])
+
+  if (user) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   return (
     <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '3.5rem 1.25rem 5rem' }}>
@@ -198,9 +199,9 @@ function LandingPage() {
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
-            {announcements.map((item) => (
+            {announcements.map((item, idx) => (
               <div
-                key={item.id}
+                key={item.id || item.title || idx}
                 style={{
                   background: 'white',
                   borderRadius: '20px',
@@ -247,11 +248,11 @@ function LandingPage() {
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
-            {events.map((item) => {
+            {events.map((item, idx) => {
               const eventDateObj = item.eventDate ? new Date(item.eventDate) : null
               return (
                 <div
-                  key={item.id}
+                  key={item.id || item.title || idx}
                   style={{
                     background: 'white',
                     borderRadius: '20px',
@@ -514,7 +515,7 @@ function DashboardPage() {
           { label: 'Pengumuman Aktif', value: stats?.totalPengumuman ?? announcements.length, icon: <Megaphone size={28} style={{ color: '#8b5cf6' }} /> },
           { label: 'Acara Mendatang', value: stats?.totalKegiatan ?? events.length, icon: <Calendar size={28} style={{ color: '#3b82f6' }} /> },
           { label: isAdmin ? 'Total Laporan Masuk' : 'Laporan Selesai', value: isAdmin ? (stats?.totalLaporan ?? '—') : (stats?.totalLaporanSelesai ?? '—'), icon: isAdmin ? <FileText size={28} style={{ color: '#10b981' }} /> : <CheckCircle2 size={28} style={{ color: '#10b981' }} /> },
-          { label: 'Laporan Pending', value: stats?.totalLaporanPending ?? '—', icon: <Hourglass size={28} style={{ color: '#f59e0b' }} /> },
+          { label: 'Laporan Menunggu', value: stats?.totalLaporanPending ?? '—', icon: <Hourglass size={28} style={{ color: '#f59e0b' }} /> },
         ].map((card) => (
           <div key={card.label} style={{ background: 'white', borderRadius: '20px', padding: '1.25rem', boxShadow: '0 10px 30px rgba(15, 23, 42, 0.05)', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
