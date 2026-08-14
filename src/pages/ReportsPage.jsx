@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { reportsApi } from '../api/reports';
 import { uploadApi } from '../api/upload';
@@ -80,6 +81,7 @@ function formatCompletionEvidence(photoUrl, notes) {
 
 export default function ReportsPage() {
   const { user, isAdmin } = useAuth();
+  const [searchParams] = useSearchParams();
   const [reports, setReports] = useState([]);
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
   const [statuses, setStatuses] = useState(DEFAULT_STATUSES);
@@ -94,6 +96,7 @@ export default function ReportsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [isFromNotification, setIsFromNotification] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
   const [detailReport, setDetailReport] = useState(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
@@ -179,6 +182,23 @@ export default function ReportsPage() {
     fetchReports();
   }, [isAdmin, filterCategory, filterStatus, searchKeyword]);
 
+  useEffect(() => {
+    const targetId = searchParams.get('reportId');
+    if (targetId) {
+      handleOpenDetail(targetId, true);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const handleOpenCustom = (e) => {
+      if (e.detail?.reportId) {
+        handleOpenDetail(e.detail.reportId, true);
+      }
+    };
+    window.addEventListener('wc-open-report-detail', handleOpenCustom);
+    return () => window.removeEventListener('wc-open-report-detail', handleOpenCustom);
+  }, []);
+
   const handleEvidenceFileUpload = async (e) => {
     const originalFile = e.target.files?.[0];
     if (!originalFile) return;
@@ -230,8 +250,23 @@ export default function ReportsPage() {
     setSubmitting(true);
     setError('');
     try {
-      await reportsApi.create(createForm);
+      const res = await reportsApi.create(createForm);
+      const createdData = res?.data || res;
       setShowCreateModal(false);
+      
+      // Dispatch custom event for real-time notification listener
+      window.dispatchEvent(
+        new CustomEvent('wc-report-created', {
+          detail: {
+            id: createdData?.id || Date.now(),
+            title: createForm.title,
+            category: createForm.category,
+            reporterName: user?.fullName || user?.name || 'Warga',
+            createdAt: new Date().toISOString(),
+          },
+        })
+      );
+
       setCreateForm({ title: '', description: '', category: 'JALAN_RUSAK', location: '', latitude: null, longitude: null, photoEvidence: '' });
       setPhotoPreviewUrl('');
       setActionMessage('Laporan pengaduan berhasil dikirim!');
@@ -310,7 +345,8 @@ export default function ReportsPage() {
     }
   };
 
-  const handleOpenDetail = async (id) => {
+  const handleOpenDetail = async (id, fromNotification = false) => {
+    setIsFromNotification(fromNotification);
     setLoadingDetail(true);
     setShowDetailModal(true);
     setError('');
@@ -1131,7 +1167,7 @@ export default function ReportsPage() {
               <button type="button" onClick={() => { setShowDetailModal(false); setDetailReport(null); }} className="btn btn-secondary">
                 Tutup
               </button>
-              {isAdmin && detailReport && detailReport.status !== 'SELESAI' && (
+              {isAdmin && detailReport && detailReport.status !== 'SELESAI' && !isFromNotification && (
                 <button
                   type="button"
                   className="btn btn-primary"

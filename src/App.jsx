@@ -12,6 +12,8 @@ import AnnouncementsPage from './pages/AnnouncementsPage'
 import EventsPage from './pages/EventsPage'
 import ProfilePage from './pages/ProfilePage'
 import UsersManagementPage from './pages/UsersManagementPage'
+import { NotificationProvider } from './context/NotificationContext'
+import NotificationBell from './components/ui/NotificationBell'
 import ConfirmModal from './components/ui/ConfirmModal'
 import { LogOut, ShieldCheck, User, Lightbulb, Megaphone, Calendar, FileText, CheckCircle2, Hourglass, MapPin, Pin } from 'lucide-react'
 
@@ -52,6 +54,7 @@ function AppShell({ children }) {
                 <NavLink to="/profile" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.9rem' })}>
                   Profil
                 </NavLink>
+                {isAdmin && <NotificationBell />}
                 <button
                   type="button"
                   onClick={() => setShowLogoutModal(true)}
@@ -599,19 +602,21 @@ function DashboardPage() {
 
 function App() {
   return (
-    <AppShell>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<AuthForm mode="login" />} />
-        <Route path="/register" element={<AuthForm mode="register" />} />
-        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
-        <Route path="/users" element={<ProtectedRoute><UsersManagementPage /></ProtectedRoute>} />
-        <Route path="/announcements" element={<ProtectedRoute><AnnouncementsPage /></ProtectedRoute>} />
-        <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-      </Routes>
-    </AppShell>
+    <NotificationProvider>
+      <AppShell>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<AuthForm mode="login" />} />
+          <Route path="/register" element={<AuthForm mode="register" />} />
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
+          <Route path="/users" element={<ProtectedRoute><UsersManagementPage /></ProtectedRoute>} />
+          <Route path="/announcements" element={<ProtectedRoute><AnnouncementsPage /></ProtectedRoute>} />
+          <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+        </Routes>
+      </AppShell>
+    </NotificationProvider>
   )
 }
 
