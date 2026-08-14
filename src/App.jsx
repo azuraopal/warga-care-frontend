@@ -13,11 +13,12 @@ import EventsPage from './pages/EventsPage'
 import ProfilePage from './pages/ProfilePage'
 import UsersManagementPage from './pages/UsersManagementPage'
 import ConfirmModal from './components/ui/ConfirmModal'
-import { LogOut, ShieldCheck, User, Lightbulb, Megaphone, Calendar, FileText, CheckCircle2, Hourglass } from 'lucide-react'
+import { LogOut, ShieldCheck, User, Lightbulb, Megaphone, Calendar, FileText, CheckCircle2, Hourglass, MapPin, Pin } from 'lucide-react'
 
 function AppShell({ children }) {
   const { user, logout, isAdmin } = useAuth()
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const openChatbot = () => window.dispatchEvent(new Event('wc-open-chat'))
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%)', color: '#0f172a', display: 'flex', flexDirection: 'column' }}>
@@ -65,6 +66,13 @@ function AppShell({ children }) {
             ) : (
               <>
                 <NavLink to="/" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', fontWeight: 600, fontSize: '0.9rem' })}>Beranda</NavLink>
+                <button
+                  type="button"
+                  onClick={openChatbot}
+                  style={{ padding: '0.55rem 0.95rem', borderRadius: '999px', color: 'white', background: 'linear-gradient(135deg, #1d4ed8, #2563eb)', border: 'none', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)' }}
+                >
+                  Tanya AI
+                </button>
                 <NavLink to="/login" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', fontWeight: 600, fontSize: '0.9rem' })}>Masuk</NavLink>
                 <NavLink to="/register" style={{ padding: '0.55rem 1.1rem', borderRadius: '999px', background: '#2563eb', color: 'white', fontWeight: 700, fontSize: '0.9rem' }}>Daftar</NavLink>
               </>
@@ -95,7 +103,7 @@ function AppShell({ children }) {
         icon={LogOut}
         variant="danger"
       />
-      {user && <LiveChatWidget />}
+      <LiveChatWidget />
     </div>
   )
 }
@@ -128,6 +136,7 @@ function LandingPage() {
   const [announcements, setAnnouncements] = useState([])
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
+  const openChatbot = () => window.dispatchEvent(new Event('wc-open-chat'))
 
   useEffect(() => {
     if (user) return
@@ -158,8 +167,8 @@ function LandingPage() {
     <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '3.5rem 1.25rem 5rem' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem', alignItems: 'center' }}>
         <div>
-          <p style={{ display: 'inline-block', padding: '0.4rem 0.85rem', borderRadius: '999px', background: '#dbeafe', color: '#1d4ed8', fontWeight: 700, fontSize: '0.875rem', marginBottom: '1rem' }}>
-            ✓ Platform Komunikasi RT/RW Terintegrasi
+          <p style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 0.85rem', borderRadius: '999px', background: '#dbeafe', color: '#1d4ed8', fontWeight: 700, fontSize: '0.875rem', marginBottom: '1rem' }}>
+            <CheckCircle2 size={14} /> Platform Komunikasi RT/RW Terintegrasi
           </p>
           <h1 style={{ fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', lineHeight: 1.15, marginBottom: '1.2rem', fontWeight: 800 }}>
             Kelola Pengumuman, Agenda Kegiatan & Pengaduan Warga Secara Real-Time.
@@ -174,6 +183,13 @@ function LandingPage() {
             <Link to="/login" style={{ padding: '0.85rem 1.5rem', borderRadius: '999px', background: 'white', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: 700 }}>
               Masuk ke Akun
             </Link>
+            <button
+              type="button"
+              onClick={openChatbot}
+              style={{ padding: '0.85rem 1.5rem', borderRadius: '999px', background: 'linear-gradient(135deg, #1d4ed8, #2563eb)', color: 'white', fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 10px 25px rgba(37, 99, 235, 0.28)' }}
+            >
+              Tanya AI Sekarang
+            </button>
           </div>
         </div>
 
@@ -285,8 +301,9 @@ function LandingPage() {
                     <h3 style={{ fontSize: '1.2rem', margin: 0, color: '#0f172a' }}>{item.title}</h3>
 
                     {item.location && (
-                      <div style={{ fontSize: '0.875rem', color: '#64748b', fontWeight: 500 }}>
-                        📍 {item.location}
+                      <div style={{ fontSize: '0.875rem', color: '#64748b', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <MapPin size={15} style={{ color: '#2563eb' }} />
+                        <span>{item.location}</span>
                       </div>
                     )}
 
@@ -539,7 +556,11 @@ function DashboardPage() {
             announcements.slice(0, 4).map((item) => (
               <div key={item.id || item.title} style={{ padding: '0.85rem 0', borderBottom: '1px solid #f1f5f9' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                  {item.isPinned && <span className="badge badge-pinned" style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem' }}>📌 Pinned</span>}
+                  {item.isPinned && (
+                    <span className="badge badge-pinned" style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                      <Pin size={11} /> Pinned
+                    </span>
+                  )}
                   <strong style={{ color: '#0f172a' }}>{item.title}</strong>
                 </div>
                 <p style={{ color: '#64748b', margin: 0, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>

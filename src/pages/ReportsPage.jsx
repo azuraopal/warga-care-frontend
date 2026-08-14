@@ -892,8 +892,8 @@ export default function ReportsPage() {
                       />
                     </div>
 
-                    <span style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 600 }}>
-                      ⚠️ Setelah status disimpan sebagai SELESAI, status laporan akan dikunci permanen.
+                    <span style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <AlertCircle size={14} /> Setelah status disimpan sebagai SELESAI, status laporan akan dikunci permanen.
                     </span>
                   </div>
                 )}

@@ -1,3 +1,4 @@
+import { Pin } from 'lucide-react';
 import './Badge.css';
 
 const STATUS_MAP = {
@@ -29,5 +30,10 @@ export function CategoryBadge({ category }) {
 }
 
 export function PinnedBadge() {
-  return <span className="badge badge-pinned">📌 Disematkan</span>;
+  return (
+    <span className="badge badge-pinned" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+      <Pin size={12} /> Disematkan
+    </span>
+  );
 }
+

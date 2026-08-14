@@ -194,8 +194,9 @@ export default function LocationPicker({
 
       {position && (
         <div className="location-picker__coords">
-          <span className="location-picker__coord-badge">
-            📍 {latitude.toFixed(6)}, {longitude.toFixed(6)}
+          <span className="location-picker__coord-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <MapPin size={12} />
+            <span>{latitude.toFixed(6)}, {longitude.toFixed(6)}</span>
           </span>
           {geocoding && (
             <span className="location-picker__geocoding">
