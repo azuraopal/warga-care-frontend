@@ -8,7 +8,7 @@ import SearchFilterBar from '../components/ui/SearchFilterBar';
 import LocationPicker from '../components/ui/LocationPicker';
 import { formatImageUrl } from '../utils/image';
 import { compressAndConvertImage } from '../utils/imageConverter';
-import { MapPin, Lightbulb, CheckCircle2, Lock, AlertCircle, Trash2, Plus, Search, Image as ImageIcon, Upload, Camera, X, ClipboardList, Megaphone, Calendar } from 'lucide-react';
+import { MapPin, Lightbulb, CheckCircle2, Lock, AlertCircle, Trash2, Plus, Search, Image as ImageIcon, Upload, Camera, X, ClipboardList, Megaphone, Calendar, FileText } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 

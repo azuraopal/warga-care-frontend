@@ -725,3 +725,54 @@ img {
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.12);
 }
 
+@media print {
+  /* 1. Hide everything on the page by default when printing */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* 2. Unhide ONLY the single printable report document */
+  #printable-report-document,
+  #printable-report-document * {
+    visibility: visible !important;
+  }
+
+  /* 3. Position the printable report document at top-left of page */
+  #printable-report-document {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* 4. Ensure .no-print elements are completely hidden */
+  .no-print,
+  .no-print *,
+  header,
+  footer,
+  nav,
+  aside {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* 5. Prevent awkward page breaks inside rows and tables */
+  #printable-report-document tr,
+  #printable-report-document table {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+}
+
+

@@ -12,6 +12,7 @@ import AnnouncementsPage from './pages/AnnouncementsPage'
 import EventsPage from './pages/EventsPage'
 import ProfilePage from './pages/ProfilePage'
 import UsersManagementPage from './pages/UsersManagementPage'
+import KasRtPage from './pages/KasRtPage'
 import { NotificationProvider } from './context/NotificationContext'
 import NotificationBell from './components/ui/NotificationBell'
 import ConfirmModal from './components/ui/ConfirmModal'
@@ -24,52 +25,59 @@ function AppShell({ children }) {
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%)', color: '#0f172a', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(15, 23, 42, 0.08)', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)' }}>
-        <div style={{ maxWidth: '1180px', margin: '0 auto', padding: '0.85rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-          <Link to={user ? "/dashboard" : "/"} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 800, fontSize: '1.15rem' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '38px', height: '38px', borderRadius: '12px', background: '#2563eb', color: 'white', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}>WC</span>
-            <span>WargaCare</span>
-          </Link>
+      <header className="no-print" style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(15, 23, 42, 0.08)', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(20px)' }}>
+        <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0.75rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Link to={user ? "/dashboard" : "/"} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontWeight: 800, fontSize: '1.15rem', color: '#0f172a', textDecoration: 'none' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: 'white', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)', fontWeight: 800 }}>WC</span>
+              <span>WargaCare</span>
+            </Link>
+            {user && (
+              <span className={`badge ${isAdmin ? 'badge-role-admin' : 'badge-role-warga'}`} style={{ fontSize: '0.725rem', padding: '0.2rem 0.65rem', borderRadius: '999px', fontWeight: 700 }}>
+                {isAdmin ? 'ADMIN RT' : 'WARGA'}
+              </span>
+            )}
+          </div>
 
-          <nav style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <nav style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', overflowX: 'auto', padding: '0.2rem 0' }}>
             {user ? (
               <>
-                <NavLink to="/dashboard" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.9rem' })}>
+                <NavLink to="/dashboard" style={({ isActive }) => ({ padding: '0.45rem 0.75rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textDecoration: 'none' })}>
                   Dashboard
                 </NavLink>
-                <NavLink to="/reports" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.9rem' })}>
+                <NavLink to="/reports" style={({ isActive }) => ({ padding: '0.45rem 0.75rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textDecoration: 'none' })}>
                   {isAdmin ? 'Laporan Warga' : 'Laporan Saya'}
                 </NavLink>
                 {isAdmin && (
-                  <NavLink to="/users" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.9rem' })}>
+                  <NavLink to="/users" style={({ isActive }) => ({ padding: '0.45rem 0.75rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textDecoration: 'none' })}>
                     Kelola Warga
                   </NavLink>
                 )}
-                <NavLink to="/announcements" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.9rem' })}>
+                <NavLink to="/announcements" style={({ isActive }) => ({ padding: '0.45rem 0.75rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textDecoration: 'none' })}>
                   Pengumuman
                 </NavLink>
-                <NavLink to="/events" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.9rem' })}>
+                <NavLink to="/events" style={({ isActive }) => ({ padding: '0.45rem 0.75rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textDecoration: 'none' })}>
                   Kegiatan
                 </NavLink>
-                <NavLink to="/profile" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.9rem' })}>
+                <NavLink to="/kas" style={({ isActive }) => ({ padding: '0.45rem 0.75rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textDecoration: 'none' })}>
+                  Kas RT
+                </NavLink>
+                <NavLink to="/profile" style={({ isActive }) => ({ padding: '0.45rem 0.75rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textDecoration: 'none' })}>
                   Profil
                 </NavLink>
                 {isAdmin && <NotificationBell />}
                 <button
                   type="button"
                   onClick={() => setShowLogoutModal(true)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.45rem 0.85rem', borderRadius: '999px', border: '1px solid #cbd5e1', background: 'white', fontWeight: 600, fontSize: '0.85rem', color: '#dc2626', cursor: 'pointer' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.8rem', borderRadius: '999px', border: '1px solid #fee2e2', background: '#fff5f5', fontWeight: 600, fontSize: '0.825rem', color: '#dc2626', cursor: 'pointer', marginLeft: '0.35rem', whiteSpace: 'nowrap' }}
                 >
                   <LogOut size={14} /> Keluar
                 </button>
-                <span className={`badge ${isAdmin ? 'badge-role-admin' : 'badge-role-warga'}`} style={{ marginLeft: '0.2rem' }}>
-                  {isAdmin ? 'ADMIN RT' : 'WARGA'}
-                </span>
               </>
             ) : (
               <>
-                <NavLink to="/login" style={({ isActive }) => ({ padding: '0.55rem 0.95rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', fontWeight: 600, fontSize: '0.9rem' })}>Masuk</NavLink>
-                <NavLink to="/register" style={{ padding: '0.55rem 1.1rem', borderRadius: '999px', background: '#2563eb', color: 'white', fontWeight: 700, fontSize: '0.9rem' }}>Daftar</NavLink>
+                <NavLink to="/login" style={({ isActive }) => ({ padding: '0.45rem 0.85rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none' })}>Masuk</NavLink>
+                <NavLink to="/register" style={{ padding: '0.45rem 1rem', borderRadius: '999px', background: '#2563eb', color: 'white', fontWeight: 700, fontSize: '0.875rem', textDecoration: 'none' }}>Daftar</NavLink>
               </>
             )}
           </nav>
@@ -78,7 +86,7 @@ function AppShell({ children }) {
 
       <main style={{ flex: 1 }}>{children}</main>
 
-      <footer style={{ borderTop: '1px solid rgba(15, 23, 42, 0.06)', background: 'white', padding: '1.75rem 1.25rem', textAlign: 'center', color: '#64748b', fontSize: '0.9rem' }}>
+      <footer className="no-print" style={{ borderTop: '1px solid rgba(15, 23, 42, 0.06)', background: 'white', padding: '1.75rem 1.25rem', textAlign: 'center', color: '#64748b', fontSize: '0.9rem' }}>
         <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <span>© {new Date().getFullYear()} WargaCare — Platform Komunikasi RT/RW Terpadu</span>
           <span style={{ fontSize: '0.85rem' }}>Siap Go-Live</span>
@@ -98,7 +106,9 @@ function AppShell({ children }) {
         icon={LogOut}
         variant="danger"
       />
-      <LiveChatWidget />
+      <div className="no-print">
+        <LiveChatWidget />
+      </div>
     </div>
   )
 }
@@ -598,6 +608,7 @@ function App() {
           <Route path="/users" element={<ProtectedRoute><UsersManagementPage /></ProtectedRoute>} />
           <Route path="/announcements" element={<ProtectedRoute><AnnouncementsPage /></ProtectedRoute>} />
           <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
+          <Route path="/kas" element={<ProtectedRoute><KasRtPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>
       </AppShell>
