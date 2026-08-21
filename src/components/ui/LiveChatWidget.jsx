@@ -16,7 +16,9 @@ const SUGGESTIONS = [
   { id: 'profil', label: 'Cara memperbarui profil saya?', icon: User },
 ];
 
-export default function LiveChatWidget() {
+export default function LiveChatWidget({ isMobileMenuOpen }) {
+  if (isMobileMenuOpen) return null;
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([INITIAL_BOT_MESSAGE]);
   const [inputValue, setInputValue] = useState('');
@@ -114,10 +116,10 @@ export default function LiveChatWidget() {
 
   return (
     <>
-      {/* Floating Trigger Button */}
       {!isOpen && (
         <button
           type="button"
+          className="live-chat-floating-btn"
           onClick={() => setIsOpen(true)}
           style={{
             position: 'fixed',
@@ -167,7 +169,6 @@ export default function LiveChatWidget() {
         </button>
       )}
 
-      {/* Main Chat Modal Window */}
       {isOpen && (
         <div
           className="chat-window-animation"
@@ -187,7 +188,6 @@ export default function LiveChatWidget() {
             fontFamily: "'Inter', -apple-system, sans-serif",
           }}
         >
-          {/* Header */}
           <div
             style={{
               background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%)',
@@ -310,7 +310,6 @@ export default function LiveChatWidget() {
             </div>
           </div>
 
-          {/* Messages Body Container */}
           <div
             style={{
               flex: 1,
@@ -332,7 +331,6 @@ export default function LiveChatWidget() {
                   alignItems: 'flex-start',
                 }}
               >
-                {/* Avatar Icon */}
                 <div
                   style={{
                     width: '32px',
@@ -351,8 +349,6 @@ export default function LiveChatWidget() {
                 >
                   {msg.sender === 'user' ? <User size={16} /> : <Bot size={18} />}
                 </div>
-
-                {/* Message Bubble & Timestamp */}
                 <div
                   style={{
                     maxWidth: '80%',
@@ -403,7 +399,6 @@ export default function LiveChatWidget() {
               </div>
             ))}
 
-            {/* Typing Indicator */}
             {isLoading && (
               <div
                 style={{
@@ -457,7 +452,6 @@ export default function LiveChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Suggestion Chips */}
           {!isLoading && messages.length <= 3 && (
             <div
               style={{
@@ -488,7 +482,6 @@ export default function LiveChatWidget() {
             </div>
           )}
 
-          {/* Footer Form */}
           <form
             onSubmit={handleSendMessage}
             style={{
