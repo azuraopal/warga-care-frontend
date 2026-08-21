@@ -3,6 +3,7 @@ import useAuth from '../hooks/useAuth';
 import { announcementsApi } from '../api/announcements';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import SearchFilterBar from '../components/ui/SearchFilterBar';
+import { SkeletonCard } from '../components/ui/Skeleton';
 import { Bell, Pin, Plus, Pencil, Trash2, CheckCircle2, AlertCircle, Calendar, Search, X, Megaphone, MapPin, Clock } from 'lucide-react';
 
 export default function AnnouncementsPage() {
@@ -194,7 +195,7 @@ export default function AnnouncementsPage() {
       )}
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#64748b' }}>Sedang mengambil data pengumuman...</div>
+        <SkeletonCard count={3} />
       ) : filteredAnnouncements.length === 0 ? (
         <div style={{ background: 'white', padding: '4rem 2rem', borderRadius: '24px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
           <Bell size={42} style={{ color: '#94a3b8', marginBottom: '0.75rem' }} />
@@ -229,29 +230,31 @@ export default function AnnouncementsPage() {
               style={{
                 background: selectedIds.includes(item.id) ? '#eff6ff' : 'white',
                 borderRadius: '20px',
-                padding: '1.5rem',
+                padding: '1.25rem',
                 boxShadow: selectedIds.includes(item.id) ? '0 10px 30px rgba(37, 99, 235, 0.15)' : '0 10px 30px rgba(15, 23, 42, 0.04)',
                 border: selectedIds.includes(item.id) ? '2px solid #2563eb' : (item.isPinned ? '2px solid #3b82f6' : '1px solid #f1f5f9'),
                 position: 'relative',
                 transition: 'all 0.2s ease',
                 cursor: (isAdmin && isSelectionMode) ? 'pointer' : 'default',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem 0.6rem', flex: '1 1 200px', minWidth: 0 }}>
                   {item.isPinned && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#eff6ff', color: '#2563eb', padding: '0.25rem 0.65rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700 }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#eff6ff', color: '#2563eb', padding: '0.25rem 0.65rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
                       <Pin size={12} /> Pinned
                     </span>
                   )}
-                  <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#0f172a' }}>{item.title}</h3>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#0f172a', wordBreak: 'break-word', overflowWrap: 'break-word', flex: 1, minWidth: 0 }}>{item.title}</h3>
                 </div>
 
                 {isAdmin && !isSelectionMode && (
-                  <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
                     <button
                       type="button"
-                      onClick={() => handleTogglePin(item)}
+                      onClick={(e) => { e.stopPropagation(); handleTogglePin(item); }}
                       style={{
                         background: item.isPinned ? '#fef3c7' : '#f1f5f9',
                         border: item.isPinned ? '1px solid #fde68a' : 'none',
@@ -263,7 +266,8 @@ export default function AnnouncementsPage() {
                         alignItems: 'center',
                         gap: '0.25rem',
                         fontSize: '0.8rem',
-                        fontWeight: 600
+                        fontWeight: 600,
+                        whiteSpace: 'nowrap'
                       }}
                       title={item.isPinned ? "Lepas Pin" : "Sematkan (Pin) Pengumuman"}
                     >
@@ -271,7 +275,7 @@ export default function AnnouncementsPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleOpenEdit(item)}
+                      onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
                       style={{ background: '#f1f5f9', border: 'none', padding: '0.45rem', borderRadius: '8px', cursor: 'pointer', color: '#475569' }}
                       title="Edit"
                     >
@@ -279,7 +283,7 @@ export default function AnnouncementsPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setItemToDelete(item)}
+                      onClick={(e) => { e.stopPropagation(); setItemToDelete(item); }}
                       style={{ background: '#fef2f2', border: 'none', padding: '0.45rem', borderRadius: '8px', cursor: 'pointer', color: '#dc2626' }}
                       title="Hapus"
                     >
@@ -298,19 +302,21 @@ export default function AnnouncementsPage() {
                   marginBottom: '1rem',
                   display: 'flex',
                   flexWrap: 'wrap',
-                  gap: '1.25rem',
-                  alignItems: 'center'
+                  gap: '0.5rem 1.25rem',
+                  alignItems: 'center',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word'
                 }}>
                   {(item.eventDate || item.date) && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0369a1', fontWeight: 600, fontSize: '0.875rem' }}>
-                      <Calendar size={16} style={{ color: '#0284c7' }} />
-                      <span>Waktu Pelaksanaan: {new Date(item.eventDate || item.date).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} WIB</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0369a1', fontWeight: 600, fontSize: '0.875rem', minWidth: 0 }}>
+                      <Calendar size={16} style={{ color: '#0284c7', flexShrink: 0 }} />
+                      <span style={{ wordBreak: 'break-word' }}>Waktu Pelaksanaan: {new Date(item.eventDate || item.date).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} WIB</span>
                     </div>
                   )}
                   {item.location && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#334155', fontWeight: 500, fontSize: '0.85rem' }}>
-                      <MapPin size={15} style={{ color: '#ef4444' }} />
-                      <span>Lokasi: {item.location}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#334155', fontWeight: 500, fontSize: '0.85rem', minWidth: 0 }}>
+                      <MapPin size={15} style={{ color: '#ef4444', flexShrink: 0 }} />
+                      <span style={{ wordBreak: 'break-word' }}>Lokasi: {item.location}</span>
                     </div>
                   )}
                 </div>
