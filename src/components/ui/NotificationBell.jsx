@@ -130,7 +130,7 @@ export default function NotificationBell() {
           style={{
             position: 'absolute',
             top: 'calc(100% + 0.65rem)',
-            right: '-10px',
+            right: 0,
             width: 'min(380px, 92vw)',
             maxHeight: '520px',
             background: 'white',
