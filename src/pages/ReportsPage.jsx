@@ -6,6 +6,7 @@ import { uploadApi } from '../api/upload';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import SearchFilterBar from '../components/ui/SearchFilterBar';
 import LocationPicker from '../components/ui/LocationPicker';
+import { SkeletonCard } from '../components/ui/Skeleton';
 import { formatImageUrl } from '../utils/image';
 import { compressAndConvertImage } from '../utils/imageConverter';
 import { MapPin, Lightbulb, CheckCircle2, Lock, AlertCircle, Trash2, Plus, Search, Image as ImageIcon, Upload, Camera, X, ClipboardList, Megaphone, Calendar, FileText } from 'lucide-react';
@@ -473,7 +474,7 @@ export default function ReportsPage() {
       )}
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#64748b' }}>Sedang memuat laporan...</div>
+        <SkeletonCard count={3} />
       ) : filteredReports.length === 0 ? (
         <div style={{ background: 'white', padding: '4rem 2rem', borderRadius: '24px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
           <h3 style={{ marginBottom: '0.5rem' }}>Belum ada laporan pengaduan</h3>
