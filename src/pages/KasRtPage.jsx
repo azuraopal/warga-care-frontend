@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
 import { kasApi, KAS_CATEGORIES } from '../api/kas';
 import ConfirmModal from '../components/ui/ConfirmModal';
+import { SkeletonCard } from '../components/ui/Skeleton';
 import {
   Wallet,
   TrendingUp,
@@ -694,7 +695,7 @@ Tertanda,
           </div>
 
           {loadingTxs ? (
-            <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>Memuat data transaksi kas...</div>
+            <SkeletonCard count={3} />
           ) : transactions.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '3rem 1.5rem', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
               <FileText size={40} color="#94a3b8" style={{ marginBottom: '0.75rem' }} />
@@ -702,7 +703,7 @@ Tertanda,
               <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>Pencatatan kas untuk {userRt} masih kosong atau filter tidak cocok.</p>
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
+            <div className="table-responsive">
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
@@ -892,7 +893,7 @@ Tertanda,
           )}
 
           {iuranMode === 'weekly' ? (
-            <div style={{ overflowX: 'auto' }}>
+            <div className="table-responsive">
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
@@ -1034,7 +1035,7 @@ Tertanda,
               </table>
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
+            <div className="table-responsive">
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
