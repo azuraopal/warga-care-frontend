@@ -18,7 +18,7 @@ export default function SearchFilterBar({
         border: '1px solid #f1f5f9',
         marginBottom: '1.5rem',
         display: 'grid',
-        gridTemplateColumns: `repeat(${colCount}, minmax(180px, 1fr))`,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
         gap: '0.75rem',
         alignItems: 'center',
       }}
