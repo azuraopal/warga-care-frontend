@@ -240,54 +240,54 @@ export default function AnnouncementsPage() {
                 overflowWrap: 'break-word',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem 0.6rem', flex: '1 1 200px', minWidth: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, minWidth: 0 }}>
                   {item.isPinned && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#eff6ff', color: '#2563eb', padding: '0.25rem 0.65rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
-                      <Pin size={12} /> Pinned
-                    </span>
+                    <div>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: '#eff6ff', color: '#2563eb', padding: '0.25rem 0.75rem', borderRadius: '999px', fontSize: '0.725rem', fontWeight: 800, letterSpacing: '0.02em', flexShrink: 0, border: '1px solid #bfdbfe' }}>
+                        <Pin size={12} style={{ transform: 'rotate(45deg)' }} /> PINNED
+                      </span>
+                    </div>
                   )}
-                  <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#0f172a', wordBreak: 'break-word', overflowWrap: 'break-word', flex: 1, minWidth: 0 }}>{item.title}</h3>
+                  <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 750, color: '#0f172a', wordBreak: 'break-word', overflowWrap: 'break-word', lineHeight: 1.4 }}>{item.title}</h3>
                 </div>
 
                 {isAdmin && !isSelectionMode && (
-                  <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexShrink: 0, marginLeft: 'auto' }}>
+                  <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexShrink: 0 }}>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); handleTogglePin(item); }}
                       style={{
                         background: item.isPinned ? '#fef3c7' : '#f1f5f9',
-                        border: item.isPinned ? '1px solid #fde68a' : 'none',
-                        padding: '0.45rem 0.75rem',
-                        borderRadius: '8px',
+                        border: 'none',
+                        padding: '0.5rem',
+                        borderRadius: '10px',
                         cursor: 'pointer',
-                        color: item.isPinned ? '#ca8a04' : '#475569',
+                        color: item.isPinned ? '#d97706' : '#475569',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '0.25rem',
-                        fontSize: '0.8rem',
-                        fontWeight: 600,
-                        whiteSpace: 'nowrap'
+                        justifyContent: 'center',
+                        transition: 'all 0.2s ease'
                       }}
-                      title={item.isPinned ? "Lepas Pin" : "Sematkan (Pin) Pengumuman"}
+                      title={item.isPinned ? "Lepas Pin" : "Sematkan Pengumuman"}
                     >
-                      <Pin size={14} /> {item.isPinned ? 'Lepas Pin' : 'Pin'}
+                      <Pin size={16} style={{ transform: item.isPinned ? 'rotate(45deg)' : 'none' }} />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
-                      style={{ background: '#f1f5f9', border: 'none', padding: '0.45rem', borderRadius: '8px', cursor: 'pointer', color: '#475569' }}
-                      title="Edit"
+                      style={{ background: '#f1f5f9', border: 'none', padding: '0.5rem', borderRadius: '10px', cursor: 'pointer', color: '#475569', transition: 'all 0.2s ease' }}
+                      title="Edit Pengumuman"
                     >
-                      <Pencil size={15} />
+                      <Pencil size={16} />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); setItemToDelete(item); }}
-                      style={{ background: '#fef2f2', border: 'none', padding: '0.45rem', borderRadius: '8px', cursor: 'pointer', color: '#dc2626' }}
-                      title="Hapus"
+                      style={{ background: '#fef2f2', border: 'none', padding: '0.5rem', borderRadius: '10px', cursor: 'pointer', color: '#e11d48', transition: 'all 0.2s ease' }}
+                      title="Hapus Pengumuman"
                     >
-                      <Trash2 size={15} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 )}
@@ -450,24 +450,9 @@ export default function AnnouncementsPage() {
       )}
 
       {isAdmin && isSelectionMode && selectedIds.length > 0 && (
-        <div style={{
-          position: 'fixed',
-          bottom: '2rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: 'white',
-          padding: '1rem 1.5rem',
-          borderRadius: '16px',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '1.5rem',
-          zIndex: 100,
-          border: '1px solid #e2e8f0',
-          animation: 'slideUp 0.3s ease'
-        }}>
-          <span style={{ fontWeight: 600, color: '#0f172a' }}>{selectedIds.length} pengumuman dipilih</span>
-          <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
+        <div className="bulk-selection-bar">
+          <span className="bulk-count-text" style={{ fontWeight: 600, color: '#0f172a' }}>{selectedIds.length} pengumuman dipilih</span>
+          <div className="divider" style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
           <button
             onClick={() => {
               if (selectedIds.length === filteredAnnouncements.length) setSelectedIds([]);

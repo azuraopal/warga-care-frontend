@@ -555,24 +555,9 @@ export default function EventsPage() {
       )}
 
       {isAdmin && isSelectionMode && selectedIds.length > 0 && (
-        <div style={{
-          position: 'fixed',
-          bottom: '2rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: 'white',
-          padding: '1rem 1.5rem',
-          borderRadius: '16px',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '1.5rem',
-          zIndex: 100,
-          border: '1px solid #e2e8f0',
-          animation: 'slideUp 0.3s ease'
-        }}>
-          <span style={{ fontWeight: 600, color: '#0f172a' }}>{selectedIds.length} event dipilih</span>
-          <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
+        <div className="bulk-selection-bar">
+          <span className="bulk-count-text" style={{ fontWeight: 600, color: '#0f172a' }}>{selectedIds.length} event dipilih</span>
+          <div className="divider" style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
           <button
             onClick={() => {
               if (selectedIds.length === filteredEvents.length) setSelectedIds([]);

@@ -179,7 +179,9 @@ export function NotificationProvider({ children }) {
 
     let eventSource;
     try {
-      eventSource = new EventSource('/api/reports/stream');
+      const token = localStorage.getItem('token');
+      const streamUrl = token ? `/api/reports/stream?token=${encodeURIComponent(token)}` : '/api/reports/stream';
+      eventSource = new EventSource(streamUrl);
       eventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
@@ -187,6 +189,8 @@ export function NotificationProvider({ children }) {
             addNotification(data, true);
           }
         } catch (e) {}
+      };
+      eventSource.onerror = () => {
       };
     } catch (e) {}
 
