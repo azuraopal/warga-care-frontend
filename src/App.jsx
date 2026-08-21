@@ -310,8 +310,7 @@ function LandingPage() {
                           background: 'linear-gradient(to top, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.05) 50%, rgba(0, 0, 0, 0) 100%)',
                           pointerEvents: 'none',
                         }} />
-
-                        {/* Floating Date Badge */}
+                        
                         <div style={{
                           position: 'absolute',
                           top: '0.75rem',
