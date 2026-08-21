@@ -228,14 +228,20 @@ function LandingPage() {
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                    {item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Terbaru'}
+                  <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Calendar size={13} style={{ color: '#2563eb' }} />
+                    {(item.eventDate || item.date) ? `Pelaksanaan: ${new Date(item.eventDate || item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : (item.createdAt ? `Diterbitkan: ${new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}` : 'Terbaru')}
                   </span>
                   {item.isPinned && (
                     <span className="badge badge-pinned" style={{ fontSize: '0.75rem' }}>Disematkan</span>
                   )}
                 </div>
                 <h3 style={{ fontSize: '1.15rem', margin: 0, color: '#0f172a' }}>{item.title}</h3>
+                {item.location && (
+                  <span style={{ fontSize: '0.8rem', color: '#475569', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <MapPin size={13} style={{ color: '#ef4444' }} /> {item.location}
+                  </span>
+                )}
                 <p style={{ color: '#475569', fontSize: '0.9rem', margin: 0, lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                   {item.content}
                 </p>
@@ -275,37 +281,81 @@ function LandingPage() {
                     border: '1px solid #f1f5f9',
                     display: 'flex',
                     flexDirection: 'column',
+                    position: 'relative',
                   }}
                 >
-                  {item.imageUrl && (
-                    <div style={{ height: '160px', width: '100%', overflow: 'hidden', background: '#f8fafc' }}>
-                      <img
-                        src={formatImageUrl(item.imageUrl)}
-                        alt={item.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => {
-                          e.target.onerror = null
-                          e.target.src = 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80'
-                        }}
-                      />
+                  {item.imageUrl ? (
+                    <div style={{ padding: '0.85rem 0.85rem 0 0.85rem' }}>
+                      <div style={{
+                        aspectRatio: '16 / 9',
+                        maxHeight: '260px',
+                        width: '100%',
+                        overflow: 'hidden',
+                        position: 'relative',
+                        borderRadius: '16px',
+                        background: '#0f172a'
+                      }}>
+                        <img
+                          src={formatImageUrl(item.imageUrl)}
+                          alt={item.title}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+                          onError={(e) => {
+                            e.target.onerror = null
+                            e.target.src = 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80'
+                          }}
+                        />
+                        <div style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'linear-gradient(to top, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.05) 50%, rgba(0, 0, 0, 0) 100%)',
+                          pointerEvents: 'none',
+                        }} />
+
+                        {/* Floating Date Badge */}
+                        <div style={{
+                          position: 'absolute',
+                          top: '0.75rem',
+                          left: '0.75rem',
+                          background: 'rgba(255, 255, 255, 0.92)',
+                          backdropFilter: 'blur(10px)',
+                          WebkitBackdropFilter: 'blur(10px)',
+                          padding: '0.35rem 0.75rem',
+                          borderRadius: '10px',
+                          color: '#1e40af',
+                          fontWeight: 700,
+                          fontSize: '0.775rem',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                          boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
+                          border: '1px solid rgba(255, 255, 255, 0.6)',
+                          zIndex: 2,
+                        }}>
+                          <Calendar size={13} style={{ color: '#2563eb' }} />
+                          <span>{eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'Mendatang'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ padding: '1.25rem 1.4rem 0' }}>
+                      <span style={{ fontSize: '0.8rem', padding: '0.4rem 0.85rem', borderRadius: '12px', background: '#eff6ff', color: '#1d4ed8', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.35rem', border: '1px solid #dbeafe' }}>
+                        <Calendar size={14} style={{ color: '#2563eb' }} />
+                        {eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'Mendatang'}
+                      </span>
                     </div>
                   )}
 
-                  <div style={{ padding: '1.35rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
-                    <span style={{ fontSize: '0.8rem', padding: '0.3rem 0.7rem', borderRadius: '999px', background: '#eff6ff', color: '#1d4ed8', fontWeight: 600, alignSelf: 'flex-start' }}>
-                      {eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'Mendatang'}
-                    </span>
-
-                    <h3 style={{ fontSize: '1.2rem', margin: 0, color: '#0f172a' }}>{item.title}</h3>
+                  <div style={{ padding: '1.4rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#0f172a', lineHeight: 1.35 }}>{item.title}</h3>
 
                     {item.location && (
-                      <div style={{ fontSize: '0.875rem', color: '#64748b', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <MapPin size={15} style={{ color: '#2563eb' }} />
+                      <div style={{ fontSize: '0.875rem', color: '#475569', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <MapPin size={15} style={{ color: '#ef4444' }} />
                         <span>{item.location}</span>
                       </div>
                     )}
 
-                    <p style={{ color: '#475569', fontSize: '0.9rem', margin: 0, lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0, lineHeight: '1.6', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                       {item.description}
                     </p>
                   </div>
@@ -551,21 +601,31 @@ function DashboardPage() {
           {announcements.length === 0 ? (
             <p style={{ color: '#64748b' }}>Belum ada pengumuman.</p>
           ) : (
-            announcements.slice(0, 4).map((item) => (
-              <div key={item.id || item.title} style={{ padding: '0.85rem 0', borderBottom: '1px solid #f1f5f9' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                  {item.isPinned && (
-                    <span className="badge badge-pinned" style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
-                      <Pin size={11} /> Pinned
-                    </span>
-                  )}
-                  <strong style={{ color: '#0f172a' }}>{item.title}</strong>
+            announcements.slice(0, 4).map((item) => {
+              const displayDate = item.eventDate || item.date || item.createdAt;
+              return (
+                <div key={item.id || item.title} style={{ padding: '0.85rem 0', borderBottom: '1px solid #f1f5f9' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {item.isPinned && (
+                        <span className="badge badge-pinned" style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                          <Pin size={11} /> Pinned
+                        </span>
+                      )}
+                      <strong style={{ color: '#0f172a' }}>{item.title}</strong>
+                    </div>
+                    {displayDate && (
+                      <span style={{ fontSize: '0.75rem', color: '#64748b', whiteSpace: 'nowrap' }}>
+                        {new Date(displayDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ color: '#64748b', margin: 0, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                    {item.content}
+                  </p>
                 </div>
-                <p style={{ color: '#64748b', margin: 0, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                  {item.content}
-                </p>
-              </div>
-            ))
+              );
+            })
           )}
         </section>
 

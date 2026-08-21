@@ -272,21 +272,119 @@ export default function EventsPage() {
                   cursor: (isAdmin && isSelectionMode) ? 'pointer' : 'default',
                 }}
               >
-                {item.imageUrl && (
-                  <div style={{ height: '160px', width: '100%', overflow: 'hidden', position: 'relative' }}>
-                    <img
-                      src={formatImageUrl(item.imageUrl)}
-                      alt={item.title}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => { e.target.parentElement.style.display = 'none'; }}
-                    />
-                  </div>
-                )}
+                {item.imageUrl ? (
+                  <div style={{ padding: '0.85rem 0.85rem 0 0.85rem' }}>
+                    <div style={{
+                      aspectRatio: '16 / 9',
+                      maxHeight: '260px',
+                      width: '100%',
+                      overflow: 'hidden',
+                      position: 'relative',
+                      borderRadius: '16px',
+                      background: '#0f172a'
+                    }}>
+                      <img
+                        src={formatImageUrl(item.imageUrl)}
+                        alt={item.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+                        onError={(e) => { e.target.parentElement.parentElement.style.display = 'none'; }}
+                      />
+                      <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(to top, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.05) 50%, rgba(0, 0, 0, 0) 100%)',
+                        pointerEvents: 'none',
+                      }} />
 
-                <div style={{ padding: '1.4rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#2563eb', fontWeight: 600, fontSize: '0.85rem' }}>
-                      <Calendar size={15} />
+                      {/* Floating Date Badge */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '0.75rem',
+                        left: '0.75rem',
+                        background: 'rgba(255, 255, 255, 0.92)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        padding: '0.35rem 0.75rem',
+                        borderRadius: '10px',
+                        color: '#1e40af',
+                        fontWeight: 700,
+                        fontSize: '0.775rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
+                        border: '1px solid rgba(255, 255, 255, 0.6)',
+                        zIndex: 2,
+                      }}>
+                        <Calendar size={13} style={{ color: '#2563eb' }} />
+                        <span>{eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Tanggal Belum Diatur'}</span>
+                      </div>
+
+                      {/* Floating Admin Actions */}
+                      {isAdmin && !isSelectionMode && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '0.75rem',
+                          right: '0.75rem',
+                          display: 'flex',
+                          gap: '0.4rem',
+                          zIndex: 2,
+                        }}>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
+                            style={{
+                              background: 'rgba(255, 255, 255, 0.9)',
+                              backdropFilter: 'blur(8px)',
+                              WebkitBackdropFilter: 'blur(8px)',
+                              border: '1px solid rgba(255, 255, 255, 0.6)',
+                              padding: '0.4rem',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              color: '#334155',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            }}
+                            title="Edit"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); setItemToDelete(item); }}
+                            style={{
+                              background: 'rgba(254, 226, 226, 0.95)',
+                              backdropFilter: 'blur(8px)',
+                              WebkitBackdropFilter: 'blur(8px)',
+                              border: '1px solid rgba(254, 202, 202, 0.8)',
+                              padding: '0.4rem',
+                              borderRadius: '8px',
+                              cursor: 'pointer',
+                              color: '#dc2626',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            }}
+                            title="Hapus"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ padding: '1.25rem 1.4rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{
+                      background: '#eff6ff',
+                      padding: '0.4rem 0.85rem',
+                      borderRadius: '12px',
+                      color: '#1e40af',
+                      fontWeight: 700,
+                      fontSize: '0.8rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      border: '1px solid #dbeafe',
+                    }}>
+                      <Calendar size={14} style={{ color: '#2563eb' }} />
                       <span>{eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Tanggal Belum Diatur'}</span>
                     </div>
 
@@ -294,16 +392,16 @@ export default function EventsPage() {
                       <div style={{ display: 'flex', gap: '0.4rem' }}>
                         <button
                           type="button"
-                          onClick={() => handleOpenEdit(item)}
-                          style={{ background: '#f1f5f9', border: 'none', padding: '0.4rem', borderRadius: '8px', cursor: 'pointer', color: '#475569' }}
+                          onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
+                          style={{ background: '#f1f5f9', border: 'none', padding: '0.45rem', borderRadius: '8px', cursor: 'pointer', color: '#475569' }}
                           title="Edit"
                         >
                           <Pencil size={14} />
                         </button>
                         <button
                           type="button"
-                          onClick={() => setItemToDelete(item)}
-                          style={{ background: '#fef2f2', border: 'none', padding: '0.4rem', borderRadius: '8px', cursor: 'pointer', color: '#dc2626' }}
+                          onClick={(e) => { e.stopPropagation(); setItemToDelete(item); }}
+                          style={{ background: '#fef2f2', border: 'none', padding: '0.45rem', borderRadius: '8px', cursor: 'pointer', color: '#dc2626' }}
                           title="Hapus"
                         >
                           <Trash2 size={14} />
@@ -311,16 +409,18 @@ export default function EventsPage() {
                       </div>
                     )}
                   </div>
+                )}
 
-                  <h3 style={{ fontSize: '1.2rem', margin: 0, color: '#0f172a' }}>{item.title}</h3>
+                <div style={{ padding: '1.4rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#0f172a', lineHeight: 1.35 }}>{item.title}</h3>
 
                   {item.location && (
-                    <div style={{ fontSize: '0.85rem', color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <MapPin size={14} style={{ color: '#ef4444' }} /> {item.location}
+                    <div style={{ fontSize: '0.875rem', color: '#475569', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <MapPin size={15} style={{ color: '#ef4444' }} /> {item.location}
                     </div>
                   )}
 
-                  <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.5, margin: 0, flex: 1, whiteSpace: 'pre-line' }}>
+                  <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: 1.6, margin: 0, flex: 1, whiteSpace: 'pre-line' }}>
                     {item.description}
                   </p>
                 </div>

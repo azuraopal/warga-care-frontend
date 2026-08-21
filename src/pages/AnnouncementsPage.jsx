@@ -3,7 +3,7 @@ import useAuth from '../hooks/useAuth';
 import { announcementsApi } from '../api/announcements';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import SearchFilterBar from '../components/ui/SearchFilterBar';
-import { Bell, Pin, Plus, Pencil, Trash2, CheckCircle2, AlertCircle, Calendar, Search, X, Megaphone } from 'lucide-react';
+import { Bell, Pin, Plus, Pencil, Trash2, CheckCircle2, AlertCircle, Calendar, Search, X, Megaphone, MapPin, Clock } from 'lucide-react';
 
 export default function AnnouncementsPage() {
   const { isAdmin } = useAuth();
@@ -15,7 +15,7 @@ export default function AnnouncementsPage() {
 
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-  const [form, setForm] = useState({ title: '', content: '', isPinned: false });
+  const [form, setForm] = useState({ title: '', content: '', eventDate: '', location: '', isPinned: false });
   const [submitting, setSubmitting] = useState(false);
 
   const [itemToDelete, setItemToDelete] = useState(null);
@@ -44,15 +44,25 @@ export default function AnnouncementsPage() {
 
   const handleOpenCreate = () => {
     setEditingItem(null);
-    setForm({ title: '', content: '', isPinned: false });
+    setForm({ title: '', content: '', eventDate: '', location: '', isPinned: false });
     setShowModal(true);
   };
 
   const handleOpenEdit = (item) => {
     setEditingItem(item);
+    let formattedDate = '';
+    if (item.eventDate || item.date) {
+      const d = new Date(item.eventDate || item.date);
+      const pad = (n) => String(n).padStart(2, '0');
+      if (!isNaN(d.getTime())) {
+        formattedDate = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+    }
     setForm({
       title: item.title || '',
       content: item.content || '',
+      eventDate: formattedDate,
+      location: item.location || '',
       isPinned: item.isPinned || false,
     });
     setShowModal(true);
@@ -279,13 +289,40 @@ export default function AnnouncementsPage() {
                 )}
               </div>
 
+              {(item.eventDate || item.date || item.location) && (
+                <div style={{
+                  background: '#f0f9ff',
+                  border: '1px solid #bae6fd',
+                  borderRadius: '12px',
+                  padding: '0.75rem 1rem',
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '1.25rem',
+                  alignItems: 'center'
+                }}>
+                  {(item.eventDate || item.date) && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0369a1', fontWeight: 600, fontSize: '0.875rem' }}>
+                      <Calendar size={16} style={{ color: '#0284c7' }} />
+                      <span>Waktu Pelaksanaan: {new Date(item.eventDate || item.date).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} WIB</span>
+                    </div>
+                  )}
+                  {item.location && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#334155', fontWeight: 500, fontSize: '0.85rem' }}>
+                      <MapPin size={15} style={{ color: '#ef4444' }} />
+                      <span>Lokasi: {item.location}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <p style={{ color: '#334155', lineHeight: 1.6, whiteSpace: 'pre-line', margin: '0 0 1rem 0' }}>
                 {item.content}
               </p>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.8rem', color: '#94a3b8' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.8rem', color: '#94a3b8', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem', marginTop: '0.5rem' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                  <Calendar size={14} /> {item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Baru saja'}
+                  <Clock size={13} /> Diterbitkan: {item.createdAt ? new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Baru saja'}
                 </span>
               </div>
             </div>
@@ -295,7 +332,7 @@ export default function AnnouncementsPage() {
 
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '580px' }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '620px' }}>
             <div className="modal-header">
               <div className="modal-title-wrapper">
                 <div className="modal-title-icon">
@@ -326,6 +363,33 @@ export default function AnnouncementsPage() {
                     value={form.title}
                     onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
                   />
+                </div>
+
+                <div className="form-grid-2">
+                  <div className="form-group">
+                    <label className="form-label">
+                      Waktu & Tanggal Pelaksanaan (Opsional)
+                    </label>
+                    <input
+                      type="datetime-local"
+                      className="form-input"
+                      value={form.eventDate}
+                      onChange={(e) => setForm((prev) => ({ ...prev, eventDate: e.target.value }))}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">
+                      Lokasi Pelaksanaan (Opsional)
+                    </label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Contoh: Balai Warga RT 01 / Lapangan"
+                      value={form.location}
+                      onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))}
+                    />
+                  </div>
                 </div>
 
                 <div className="form-group">
