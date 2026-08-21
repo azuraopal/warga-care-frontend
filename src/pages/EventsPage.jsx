@@ -4,6 +4,7 @@ import { eventsApi } from '../api/events';
 import { uploadApi } from '../api/upload';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import SearchFilterBar from '../components/ui/SearchFilterBar';
+import { SkeletonGrid } from '../components/ui/Skeleton';
 import { formatImageUrl } from '../utils/image';
 import { compressAndConvertImage } from '../utils/imageConverter';
 import { Calendar, MapPin, Plus, Pencil, Trash2, CheckCircle2, AlertCircle, Image as ImageIcon, Upload, X, CalendarDays } from 'lucide-react';
@@ -225,7 +226,7 @@ export default function EventsPage() {
       )}
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#64748b' }}>Sedang mengambil jadwal kegiatan...</div>
+        <SkeletonGrid count={3} />
       ) : filteredEvents.length === 0 ? (
         <div style={{ background: 'white', padding: '4rem 2rem', borderRadius: '24px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
           <Calendar size={42} style={{ color: '#94a3b8', marginBottom: '0.75rem' }} />
@@ -244,7 +245,7 @@ export default function EventsPage() {
           )}
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
           {filteredEvents.map((item) => {
             const eventDateObj = item.eventDate ? new Date(item.eventDate) : null;
             return (
@@ -272,128 +273,78 @@ export default function EventsPage() {
                   cursor: (isAdmin && isSelectionMode) ? 'pointer' : 'default',
                 }}
               >
-                {item.imageUrl ? (
-                  <div style={{ padding: '0.85rem 0.85rem 0 0.85rem' }}>
+                <div style={{ padding: '0.85rem 0.85rem 0 0.85rem' }}>
+                  <div style={{
+                    aspectRatio: '16 / 9',
+                    maxHeight: '260px',
+                    width: '100%',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    borderRadius: '16px',
+                    background: '#0f172a'
+                  }}>
+                    <img
+                      src={item.imageUrl ? formatImageUrl(item.imageUrl) : 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80'}
+                      alt={item.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80';
+                      }}
+                    />
                     <div style={{
-                      aspectRatio: '16 / 9',
-                      maxHeight: '260px',
-                      width: '100%',
-                      overflow: 'hidden',
-                      position: 'relative',
-                      borderRadius: '16px',
-                      background: '#0f172a'
-                    }}>
-                      <img
-                        src={formatImageUrl(item.imageUrl)}
-                        alt={item.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
-                        onError={(e) => { e.target.parentElement.parentElement.style.display = 'none'; }}
-                      />
-                      <div style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'linear-gradient(to top, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.05) 50%, rgba(0, 0, 0, 0) 100%)',
-                        pointerEvents: 'none',
-                      }} />
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'linear-gradient(to top, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.05) 50%, rgba(0, 0, 0, 0) 100%)',
+                      pointerEvents: 'none',
+                    }} />
 
-                      {/* Floating Date Badge */}
-                      <div style={{
-                        position: 'absolute',
-                        top: '0.75rem',
-                        left: '0.75rem',
-                        background: 'rgba(255, 255, 255, 0.92)',
-                        backdropFilter: 'blur(10px)',
-                        WebkitBackdropFilter: 'blur(10px)',
-                        padding: '0.35rem 0.75rem',
-                        borderRadius: '10px',
-                        color: '#1e40af',
-                        fontWeight: 700,
-                        fontSize: '0.775rem',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                        boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
-                        border: '1px solid rgba(255, 255, 255, 0.6)',
-                        zIndex: 2,
-                      }}>
-                        <Calendar size={13} style={{ color: '#2563eb' }} />
-                        <span>{eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Tanggal Belum Diatur'}</span>
-                      </div>
-
-                      {/* Floating Admin Actions */}
-                      {isAdmin && !isSelectionMode && (
-                        <div style={{
-                          position: 'absolute',
-                          top: '0.75rem',
-                          right: '0.75rem',
-                          display: 'flex',
-                          gap: '0.4rem',
-                          zIndex: 2,
-                        }}>
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
-                            style={{
-                              background: 'rgba(255, 255, 255, 0.9)',
-                              backdropFilter: 'blur(8px)',
-                              WebkitBackdropFilter: 'blur(8px)',
-                              border: '1px solid rgba(255, 255, 255, 0.6)',
-                              padding: '0.4rem',
-                              borderRadius: '8px',
-                              cursor: 'pointer',
-                              color: '#334155',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                            }}
-                            title="Edit"
-                          >
-                            <Pencil size={14} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); setItemToDelete(item); }}
-                            style={{
-                              background: 'rgba(254, 226, 226, 0.95)',
-                              backdropFilter: 'blur(8px)',
-                              WebkitBackdropFilter: 'blur(8px)',
-                              border: '1px solid rgba(254, 202, 202, 0.8)',
-                              padding: '0.4rem',
-                              borderRadius: '8px',
-                              cursor: 'pointer',
-                              color: '#dc2626',
-                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                            }}
-                            title="Hapus"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ padding: '1.25rem 1.4rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{
-                      background: '#eff6ff',
-                      padding: '0.4rem 0.85rem',
-                      borderRadius: '12px',
+                      position: 'absolute',
+                      top: '0.75rem',
+                      left: '0.75rem',
+                      background: 'rgba(255, 255, 255, 0.92)',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)',
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '10px',
                       color: '#1e40af',
                       fontWeight: 700,
-                      fontSize: '0.8rem',
+                      fontSize: '0.775rem',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '0.35rem',
-                      border: '1px solid #dbeafe',
+                      boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
+                      border: '1px solid rgba(255, 255, 255, 0.6)',
+                      zIndex: 2,
                     }}>
-                      <Calendar size={14} style={{ color: '#2563eb' }} />
+                      <Calendar size={13} style={{ color: '#2563eb' }} />
                       <span>{eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Tanggal Belum Diatur'}</span>
                     </div>
 
                     {isAdmin && !isSelectionMode && (
-                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                      <div style={{
+                        position: 'absolute',
+                        top: '0.75rem',
+                        right: '0.75rem',
+                        display: 'flex',
+                        gap: '0.4rem',
+                        zIndex: 2,
+                      }}>
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
-                          style={{ background: '#f1f5f9', border: 'none', padding: '0.45rem', borderRadius: '8px', cursor: 'pointer', color: '#475569' }}
+                          style={{
+                            background: 'rgba(255, 255, 255, 0.9)',
+                            backdropFilter: 'blur(8px)',
+                            WebkitBackdropFilter: 'blur(8px)',
+                            border: '1px solid rgba(255, 255, 255, 0.6)',
+                            padding: '0.4rem',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            color: '#334155',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                          }}
                           title="Edit"
                         >
                           <Pencil size={14} />
@@ -401,7 +352,17 @@ export default function EventsPage() {
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); setItemToDelete(item); }}
-                          style={{ background: '#fef2f2', border: 'none', padding: '0.45rem', borderRadius: '8px', cursor: 'pointer', color: '#dc2626' }}
+                          style={{
+                            background: 'rgba(254, 226, 226, 0.95)',
+                            backdropFilter: 'blur(8px)',
+                            WebkitBackdropFilter: 'blur(8px)',
+                            border: '1px solid rgba(254, 202, 202, 0.8)',
+                            padding: '0.4rem',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            color: '#dc2626',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                          }}
                           title="Hapus"
                         >
                           <Trash2 size={14} />
@@ -409,7 +370,7 @@ export default function EventsPage() {
                       </div>
                     )}
                   </div>
-                )}
+                </div>
 
                 <div style={{ padding: '1.4rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#0f172a', lineHeight: 1.35 }}>{item.title}</h3>
