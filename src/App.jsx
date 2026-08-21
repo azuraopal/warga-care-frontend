@@ -39,7 +39,7 @@ function AppShell({ children }) {
             )}
           </div>
 
-          <nav style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', overflowX: 'auto', padding: '0.2rem 0' }}>
+          <nav style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', flexWrap: 'wrap', padding: '0.2rem 0' }}>
             {user ? (
               <>
                 <NavLink to="/dashboard" style={({ isActive }) => ({ padding: '0.45rem 0.75rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textDecoration: 'none' })}>

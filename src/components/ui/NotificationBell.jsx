@@ -240,9 +240,12 @@ export default function NotificationBell() {
           <div
             style={{
               flex: 1,
+              minHeight: 0,
               overflowY: 'auto',
               maxHeight: '360px',
               padding: '0.35rem 0',
+              overscrollBehavior: 'contain',
+              WebkitOverflowScrolling: 'touch'
             }}
           >
             {filteredNotifications.length === 0 ? (
