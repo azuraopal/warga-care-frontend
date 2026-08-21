@@ -3,6 +3,7 @@ import useAuth from '../hooks/useAuth';
 import { usersApi } from '../api/users';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import SearchFilterBar from '../components/ui/SearchFilterBar';
+import { SkeletonCard } from '../components/ui/Skeleton';
 import { Crown, User, Mail, Home, Phone, Ban, CheckCircle2, Trash2, AlertCircle, Plus, UserPlus, X, Lock, Shield, MapPin, ShieldAlert } from 'lucide-react';
 
 export default function UsersManagementPage() {
@@ -229,7 +230,7 @@ export default function UsersManagementPage() {
       )}
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#64748b' }}>Sedang memuat data warga...</div>
+        <SkeletonCard count={3} />
       ) : filteredUsers.length === 0 ? (
         <div style={{ background: 'white', padding: '4rem 2rem', borderRadius: '24px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
           <h3 style={{ marginBottom: '0.5rem' }}>Tidak ada data warga ditemukan</h3>
@@ -245,7 +246,7 @@ export default function UsersManagementPage() {
           </button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
           {filteredUsers.map((u) => (
             <div
               key={u.id}
