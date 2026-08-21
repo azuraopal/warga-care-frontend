@@ -6,7 +6,7 @@ import { eventsApi } from './api/events'
 import { useAuth } from './hooks/useAuth'
 import { formatImageUrl } from './utils/image'
 import heroImg from './assets/hero.png'
-import LiveChatWidget from './components/ui/LiveChatWidget';
+import LiveChatWidget from './components/ui/LiveChatWidget'
 import ReportsPage from './pages/ReportsPage'
 import AnnouncementsPage from './pages/AnnouncementsPage'
 import EventsPage from './pages/EventsPage'
@@ -16,17 +16,30 @@ import KasRtPage from './pages/KasRtPage'
 import { NotificationProvider } from './context/NotificationContext'
 import NotificationBell from './components/ui/NotificationBell'
 import ConfirmModal from './components/ui/ConfirmModal'
-import { LogOut, ShieldCheck, User, Lightbulb, Megaphone, Calendar, FileText, CheckCircle2, Hourglass, MapPin, Pin } from 'lucide-react'
+import { SkeletonCard, SkeletonStats } from './components/ui/Skeleton'
+import { LogOut, ShieldCheck, User, Lightbulb, Megaphone, Calendar, FileText, CheckCircle2, Hourglass, MapPin, Pin, Menu, X, LayoutDashboard, Users, Wallet, ChevronRight, Grid } from 'lucide-react'
 
 function AppShell({ children }) {
   const { user, logout, isAdmin } = useAuth()
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const openChatbot = () => window.dispatchEvent(new Event('wc-open-chat'))
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileMenuOpen])
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%)', color: '#0f172a', display: 'flex', flexDirection: 'column' }}>
-      <header className="no-print" style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(15, 23, 42, 0.08)', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(20px)' }}>
-        <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0.75rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+      <header className="no-print" style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(15, 23, 42, 0.08)', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)' }}>
+        <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0.75rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Link to={user ? "/dashboard" : "/"} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontWeight: 800, fontSize: '1.15rem', color: '#0f172a', textDecoration: 'none' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: 'white', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)', fontWeight: 800 }}>WC</span>
@@ -39,7 +52,7 @@ function AppShell({ children }) {
             )}
           </div>
 
-          <nav style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', flexWrap: 'wrap', padding: '0.2rem 0' }}>
+          <nav className="desktop-nav" style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
             {user ? (
               <>
                 <NavLink to="/dashboard" style={({ isActive }) => ({ padding: '0.45rem 0.75rem', borderRadius: '999px', color: isActive ? '#2563eb' : '#475569', background: isActive ? '#eff6ff' : 'transparent', fontWeight: 600, fontSize: '0.875rem', whiteSpace: 'nowrap', textDecoration: 'none' })}>
@@ -81,10 +94,430 @@ function AppShell({ children }) {
               </>
             )}
           </nav>
+
+          <div className="mobile-toggle-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {user && isAdmin && <div className="mobile-notif-btn"><NotificationBell /></div>}
+          </div>
         </div>
       </header>
 
+      {mobileMenuOpen && (
+        <>
+          <div
+            className="mobile-drawer-backdrop"
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(15, 23, 42, 0.45)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              zIndex: 998,
+              animation: 'backdropFadeIn 0.2s ease-out'
+            }}
+          />
+          <nav
+            className="mobile-drawer"
+            style={{
+              position: 'fixed',
+              bottom: '64px',
+              left: 0,
+              right: 0,
+              maxHeight: '82vh',
+              overflowY: 'auto',
+              zIndex: 999,
+              background: '#ffffff',
+              borderTopLeftRadius: '28px',
+              borderTopRightRadius: '28px',
+              padding: '1.25rem 1.25rem 1.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.35rem',
+              boxShadow: '0 -15px 40px rgba(15, 23, 42, 0.18)',
+              animation: 'mobileSheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+            }}
+          >
+            <div style={{ width: '40px', height: '4px', background: '#cbd5e1', borderRadius: '999px', margin: '0 auto 1rem' }} />
+
+            {user ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', padding: '1rem 1.15rem', background: '#f4f8ff', borderRadius: '20px', border: '1px solid #e2e8f0', marginBottom: '0.75rem' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.25rem', flexShrink: 0, boxShadow: '0 6px 16px rgba(37, 99, 235, 0.3)' }}>
+                    {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <div style={{ overflow: 'hidden', flex: 1 }}>
+                    <div style={{ fontWeight: 800, fontSize: '1rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.fullName || 'Warga'}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.1rem' }}>
+                      <span>RT {user.rt || '-'}/RW {user.rw || '-'}</span> • <strong style={{ color: isAdmin ? '#2563eb' : '#475569' }}>{isAdmin ? 'ADMIN RT' : 'WARGA'}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <NavLink
+                  onClick={() => setMobileMenuOpen(false)}
+                  to="/dashboard"
+                  style={({ isActive }) => ({
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '16px',
+                    color: isActive ? '#2563eb' : '#1e293b',
+                    background: isActive ? '#eff6ff' : 'transparent',
+                    fontWeight: isActive ? 700 : 600,
+                    fontSize: '0.95rem',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                    border: isActive ? '1px solid #bfdbfe' : '1px solid transparent'
+                  })}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <LayoutDashboard size={20} style={{ color: '#2563eb' }} />
+                    <span>Dashboard</span>
+                  </div>
+                  <ChevronRight size={16} style={{ color: '#94a3b8' }} />
+                </NavLink>
+
+                <NavLink
+                  onClick={() => setMobileMenuOpen(false)}
+                  to="/reports"
+                  style={({ isActive }) => ({
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '16px',
+                    color: isActive ? '#2563eb' : '#1e293b',
+                    background: isActive ? '#eff6ff' : 'transparent',
+                    fontWeight: isActive ? 700 : 600,
+                    fontSize: '0.95rem',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                    border: isActive ? '1px solid #bfdbfe' : '1px solid transparent'
+                  })}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <FileText size={20} style={{ color: '#2563eb' }} />
+                    <span>{isAdmin ? 'Laporan Warga' : 'Laporan Saya'}</span>
+                  </div>
+                  <ChevronRight size={16} style={{ color: '#94a3b8' }} />
+                </NavLink>
+
+                {isAdmin && (
+                  <NavLink
+                    onClick={() => setMobileMenuOpen(false)}
+                    to="/users"
+                    style={({ isActive }) => ({
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.85rem 1rem',
+                      borderRadius: '16px',
+                      color: isActive ? '#2563eb' : '#1e293b',
+                      background: isActive ? '#eff6ff' : 'transparent',
+                      fontWeight: isActive ? 700 : 600,
+                      fontSize: '0.95rem',
+                      textDecoration: 'none',
+                      transition: 'all 0.2s ease',
+                      border: isActive ? '1px solid #bfdbfe' : '1px solid transparent'
+                    })}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <Users size={20} style={{ color: '#2563eb' }} />
+                      <span>Kelola Warga</span>
+                    </div>
+                    <ChevronRight size={16} style={{ color: '#94a3b8' }} />
+                  </NavLink>
+                )}
+
+                <NavLink
+                  onClick={() => setMobileMenuOpen(false)}
+                  to="/announcements"
+                  style={({ isActive }) => ({
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '16px',
+                    color: isActive ? '#2563eb' : '#1e293b',
+                    background: isActive ? '#eff6ff' : 'transparent',
+                    fontWeight: isActive ? 700 : 600,
+                    fontSize: '0.95rem',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                    border: isActive ? '1px solid #bfdbfe' : '1px solid transparent'
+                  })}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <Megaphone size={20} style={{ color: '#2563eb' }} />
+                    <span>Pengumuman</span>
+                  </div>
+                  <ChevronRight size={16} style={{ color: '#94a3b8' }} />
+                </NavLink>
+
+                <NavLink
+                  onClick={() => setMobileMenuOpen(false)}
+                  to="/events"
+                  style={({ isActive }) => ({
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '16px',
+                    color: isActive ? '#2563eb' : '#1e293b',
+                    background: isActive ? '#eff6ff' : 'transparent',
+                    fontWeight: isActive ? 700 : 600,
+                    fontSize: '0.95rem',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                    border: isActive ? '1px solid #bfdbfe' : '1px solid transparent'
+                  })}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <Calendar size={20} style={{ color: '#2563eb' }} />
+                    <span>Kegiatan Warga</span>
+                  </div>
+                  <ChevronRight size={16} style={{ color: '#94a3b8' }} />
+                </NavLink>
+
+                <NavLink
+                  onClick={() => setMobileMenuOpen(false)}
+                  to="/kas"
+                  style={({ isActive }) => ({
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '16px',
+                    color: isActive ? '#2563eb' : '#1e293b',
+                    background: isActive ? '#eff6ff' : 'transparent',
+                    fontWeight: isActive ? 700 : 600,
+                    fontSize: '0.95rem',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                    border: isActive ? '1px solid #bfdbfe' : '1px solid transparent'
+                  })}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <Wallet size={20} style={{ color: '#2563eb' }} />
+                    <span>Kas RT</span>
+                  </div>
+                  <ChevronRight size={16} style={{ color: '#94a3b8' }} />
+                </NavLink>
+
+                <NavLink
+                  onClick={() => setMobileMenuOpen(false)}
+                  to="/profile"
+                  style={({ isActive }) => ({
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '16px',
+                    color: isActive ? '#2563eb' : '#1e293b',
+                    background: isActive ? '#eff6ff' : 'transparent',
+                    fontWeight: isActive ? 700 : 600,
+                    fontSize: '0.95rem',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s ease',
+                    border: isActive ? '1px solid #bfdbfe' : '1px solid transparent'
+                  })}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <User size={20} style={{ color: '#2563eb' }} />
+                    <span>Profil Saya</span>
+                  </div>
+                  <ChevronRight size={16} style={{ color: '#94a3b8' }} />
+                </NavLink>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setShowLogoutModal(true)
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.6rem',
+                    padding: '0.9rem 1rem',
+                    borderRadius: '20px',
+                    border: '1px solid #fee2e2',
+                    background: '#fff1f2',
+                    fontWeight: 800,
+                    fontSize: '0.975rem',
+                    color: '#e11d48',
+                    cursor: 'pointer',
+                    marginTop: '0.75rem',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <LogOut size={19} /> Keluar Akun
+                </button>
+              </>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', padding: '0.5rem 0' }}>
+                <NavLink onClick={() => setMobileMenuOpen(false)} to="/login" style={{ padding: '0.85rem 1rem', textAlign: 'center', borderRadius: '16px', background: '#f1f5f9', color: '#0f172a', fontWeight: 700, fontSize: '0.95rem', textDecoration: 'none' }}>Masuk</NavLink>
+                <NavLink onClick={() => setMobileMenuOpen(false)} to="/register" style={{ padding: '0.85rem 1rem', textAlign: 'center', borderRadius: '16px', background: '#2563eb', color: 'white', fontWeight: 700, fontSize: '0.95rem', textDecoration: 'none', boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)' }}>Daftar Akun Warga</NavLink>
+              </div>
+            )}
+          </nav>
+        </>
+      )}
+
       <main style={{ flex: 1 }}>{children}</main>
+      <div className="mobile-bottom-nav-spacer" />
+      <nav className="mobile-bottom-nav">
+        <NavLink
+          to={user ? "/dashboard" : "/"}
+          onClick={() => setMobileMenuOpen(false)}
+          style={({ isActive }) => ({
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '3px',
+            flex: 1,
+            height: '100%',
+            color: isActive && !mobileMenuOpen ? '#2563eb' : '#64748b',
+            fontWeight: isActive && !mobileMenuOpen ? 700 : 600,
+            fontSize: '0.725rem',
+            textDecoration: 'none',
+            transition: 'all 0.2s ease',
+            fontFamily: "'Plus Jakarta Sans', sans-serif"
+          })}
+        >
+          <LayoutDashboard size={20} />
+          <span>Beranda</span>
+        </NavLink>
+
+        <NavLink
+          to="/announcements"
+          onClick={() => setMobileMenuOpen(false)}
+          style={({ isActive }) => ({
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '3px',
+            flex: 1,
+            height: '100%',
+            color: isActive && !mobileMenuOpen ? '#2563eb' : '#64748b',
+            fontWeight: isActive && !mobileMenuOpen ? 700 : 600,
+            fontSize: '0.725rem',
+            textDecoration: 'none',
+            transition: 'all 0.2s ease',
+            fontFamily: "'Plus Jakarta Sans', sans-serif"
+          })}
+        >
+          <Megaphone size={20} />
+          <span>Pengumuman</span>
+        </NavLink>
+
+        {/* Elevated Floating Center Action Button (FAB) */}
+        <NavLink
+          to="/reports"
+          onClick={() => setMobileMenuOpen(false)}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 1,
+            height: '100%',
+            textDecoration: 'none',
+            position: 'relative',
+            zIndex: 10,
+            fontFamily: "'Plus Jakarta Sans', sans-serif"
+          }}
+        >
+          {({ isActive }) => {
+            const activeState = isActive && !mobileMenuOpen
+            return (
+              <>
+                <div
+                  style={{
+                    width: '52px',
+                    height: '52px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transform: 'translateY(-14px)',
+                    boxShadow: activeState ? '0 10px 28px rgba(37, 99, 235, 0.65)' : '0 8px 22px rgba(37, 99, 235, 0.45)',
+                    border: '4px solid #ffffff',
+                    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
+                  }}
+                >
+                  <FileText size={22} />
+                </div>
+                <span
+                  style={{
+                    fontSize: '0.725rem',
+                    fontWeight: activeState ? 800 : 600,
+                    color: activeState ? '#2563eb' : '#475569',
+                    transform: 'translateY(-10px)',
+                    lineHeight: 1
+                  }}
+                >
+                  Laporan
+                </span>
+              </>
+            )
+          }}
+        </NavLink>
+
+        <NavLink
+          to="/events"
+          onClick={() => setMobileMenuOpen(false)}
+          style={({ isActive }) => ({
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '3px',
+            flex: 1,
+            height: '100%',
+            color: isActive && !mobileMenuOpen ? '#2563eb' : '#64748b',
+            fontWeight: isActive && !mobileMenuOpen ? 700 : 600,
+            fontSize: '0.725rem',
+            textDecoration: 'none',
+            transition: 'all 0.2s ease',
+            fontFamily: "'Plus Jakarta Sans', sans-serif"
+          })}
+        >
+          <Calendar size={20} />
+          <span>Kegiatan</span>
+        </NavLink>
+
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen(prev => !prev)}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '3px',
+            flex: 1,
+            height: '100%',
+            background: 'none',
+            border: 'none',
+            color: mobileMenuOpen ? '#2563eb' : '#64748b',
+            fontWeight: mobileMenuOpen ? 700 : 600,
+            fontSize: '0.725rem',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            fontFamily: "'Plus Jakarta Sans', sans-serif"
+          }}
+        >
+          {mobileMenuOpen ? <X size={20} /> : <Grid size={20} />}
+          <span>{mobileMenuOpen ? 'Tutup' : 'Menu'}</span>
+        </button>
+      </nav>
 
       <footer className="no-print" style={{ borderTop: '1px solid rgba(15, 23, 42, 0.06)', background: 'white', padding: '1.75rem 1.25rem', textAlign: 'center', color: '#64748b', fontSize: '0.9rem' }}>
         <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
@@ -107,7 +540,7 @@ function AppShell({ children }) {
         variant="danger"
       />
       <div className="no-print">
-        <LiveChatWidget />
+        <LiveChatWidget isMobileMenuOpen={mobileMenuOpen} />
       </div>
     </div>
   )
@@ -284,65 +717,57 @@ function LandingPage() {
                     position: 'relative',
                   }}
                 >
-                  {item.imageUrl ? (
-                    <div style={{ padding: '0.85rem 0.85rem 0 0.85rem' }}>
-                      <div style={{
-                        aspectRatio: '16 / 9',
-                        maxHeight: '260px',
-                        width: '100%',
-                        overflow: 'hidden',
-                        position: 'relative',
-                        borderRadius: '16px',
-                        background: '#0f172a'
-                      }}>
-                        <img
-                          src={formatImageUrl(item.imageUrl)}
-                          alt={item.title}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
-                          onError={(e) => {
-                            e.target.onerror = null
-                            e.target.src = 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80'
-                          }}
-                        />
-                        <div style={{
-                          position: 'absolute',
-                          inset: 0,
-                          background: 'linear-gradient(to top, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.05) 50%, rgba(0, 0, 0, 0) 100%)',
-                          pointerEvents: 'none',
-                        }} />
-                        
-                        <div style={{
-                          position: 'absolute',
-                          top: '0.75rem',
-                          left: '0.75rem',
-                          background: 'rgba(255, 255, 255, 0.92)',
-                          backdropFilter: 'blur(10px)',
-                          WebkitBackdropFilter: 'blur(10px)',
-                          padding: '0.35rem 0.75rem',
-                          borderRadius: '10px',
-                          color: '#1e40af',
-                          fontWeight: 700,
-                          fontSize: '0.775rem',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.35rem',
-                          boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
-                          border: '1px solid rgba(255, 255, 255, 0.6)',
-                          zIndex: 2,
-                        }}>
-                          <Calendar size={13} style={{ color: '#2563eb' }} />
-                          <span>{eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'Mendatang'}</span>
-                        </div>
-                      </div>
+                {/* Banner Image (Always rendered with fallback image) */}
+                <div style={{ padding: '0.85rem 0.85rem 0 0.85rem' }}>
+                  <div style={{
+                    aspectRatio: '16 / 9',
+                    maxHeight: '260px',
+                    width: '100%',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    borderRadius: '16px',
+                    background: '#0f172a'
+                  }}>
+                    <img
+                      src={item.imageUrl ? formatImageUrl(item.imageUrl) : 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80'}
+                      alt={item.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+                      onError={(e) => {
+                        e.target.onerror = null
+                        e.target.src = 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80'
+                      }}
+                    />
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'linear-gradient(to top, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.05) 50%, rgba(0, 0, 0, 0) 100%)',
+                      pointerEvents: 'none',
+                    }} />
+                    
+                    <div style={{
+                      position: 'absolute',
+                      top: '0.75rem',
+                      left: '0.75rem',
+                      background: 'rgba(255, 255, 255, 0.92)',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)',
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '10px',
+                      color: '#1e40af',
+                      fontWeight: 700,
+                      fontSize: '0.775rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
+                      border: '1px solid rgba(255, 255, 255, 0.6)',
+                      zIndex: 2,
+                    }}>
+                      <Calendar size={13} style={{ color: '#2563eb' }} />
+                      <span>{eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'Mendatang'}</span>
                     </div>
-                  ) : (
-                    <div style={{ padding: '1.25rem 1.4rem 0' }}>
-                      <span style={{ fontSize: '0.8rem', padding: '0.4rem 0.85rem', borderRadius: '12px', background: '#eff6ff', color: '#1d4ed8', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.35rem', border: '1px solid #dbeafe' }}>
-                        <Calendar size={14} style={{ color: '#2563eb' }} />
-                        {eventDateObj ? eventDateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'Mendatang'}
-                      </span>
-                    </div>
-                  )}
+                  </div>
+                </div>
 
                   <div style={{ padding: '1.4rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#0f172a', lineHeight: 1.35 }}>{item.title}</h3>
@@ -551,7 +976,12 @@ function DashboardPage() {
   }, [isAdmin])
 
   if (loading) {
-    return <ScreenState title="Memuat dashboard" description="Sedang mengambil data dari API." />
+    return (
+      <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '2.5rem 1.25rem 5rem' }}>
+        <SkeletonStats count={4} />
+        <SkeletonCard count={2} />
+      </section>
+    )
   }
 
   return (
@@ -629,24 +1059,69 @@ function DashboardPage() {
         </section>
 
         <section style={{ background: 'white', borderRadius: '24px', padding: '1.5rem', boxShadow: '0 10px 30px rgba(15, 23, 42, 0.05)', border: '1px solid #f1f5f9' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Agenda Kegiatan</h3>
-            <Link to="/events" style={{ color: '#2563eb', fontWeight: 600, fontSize: '0.9rem' }}>Lihat Semua →</Link>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>Agenda Kegiatan</h3>
+            <Link to="/events" style={{ color: '#2563eb', fontWeight: 700, fontSize: '0.9rem' }}>Lihat Semua →</Link>
           </div>
           {events.length === 0 ? (
             <p style={{ color: '#64748b' }}>Belum ada kegiatan mendatang.</p>
           ) : (
-            events.slice(0, 4).map((item) => (
-              <div key={item.id || item.title} style={{ padding: '0.85rem 0', borderBottom: '1px solid #f1f5f9' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <strong style={{ color: '#0f172a' }}>{item.title}</strong>
-                  <span style={{ fontSize: '0.8rem', color: '#2563eb', background: '#eff6ff', padding: '0.2rem 0.5rem', borderRadius: '6px', fontWeight: 600 }}>
-                    {item.eventDate ? new Date(item.eventDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : 'Agenda'}
-                  </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {events.slice(0, 4).map((item) => (
+                <div
+                  key={item.id || item.title}
+                  style={{
+                    display: 'flex',
+                    gap: '0.85rem',
+                    alignItems: 'center',
+                    padding: '0.75rem',
+                    borderRadius: '16px',
+                    background: '#f8fafc',
+                    border: '1px solid #f1f5f9',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {/* Event Thumbnail Image (Always rendered with fallback) */}
+                  <div
+                    style={{
+                      width: '76px',
+                      height: '76px',
+                      borderRadius: '14px',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                      position: 'relative',
+                      background: '#0f172a'
+                    }}
+                  >
+                    <img
+                      src={item.imageUrl ? formatImageUrl(item.imageUrl) : 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80'}
+                      alt={item.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80';
+                      }}
+                    />
+                  </div>
+
+                  {/* Event Info */}
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+                      <strong style={{ color: '#0f172a', fontSize: '0.95rem', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {item.title}
+                      </strong>
+                      <span style={{ fontSize: '0.75rem', color: '#2563eb', background: '#eff6ff', padding: '0.25rem 0.6rem', borderRadius: '8px', fontWeight: 700, flexShrink: 0, border: '1px solid #dbeafe' }}>
+                        {item.eventDate ? new Date(item.eventDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : 'Agenda'}
+                      </span>
+                    </div>
+
+                    <p style={{ color: '#64748b', margin: 0, fontSize: '0.825rem', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {item.description || item.location || 'Agenda kegiatan warga RT/RW.'}
+                    </p>
+                  </div>
                 </div>
-                <p style={{ color: '#64748b', marginTop: '0.25rem', margin: 0, fontSize: '0.9rem' }}>{item.description || item.location}</p>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </section>
       </div>
