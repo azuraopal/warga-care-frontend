@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import { reportsApi } from '../api/reports';
+import { API_BASE_URL } from '../api/client';
 import useAuth from '../hooks/useAuth';
 
 export const NotificationContext = createContext(null);
@@ -179,8 +180,10 @@ export function NotificationProvider({ children }) {
 
     let eventSource;
     try {
-      const token = localStorage.getItem('token');
-      const streamUrl = token ? `/api/reports/stream?token=${encodeURIComponent(token)}` : '/api/reports/stream';
+      const token = localStorage.getItem('wc_token') || localStorage.getItem('token');
+      const base = API_BASE_URL.replace(/\/+$/, '');
+      const endpoint = `${base}/reports/stream`;
+      const streamUrl = token ? `${endpoint}?token=${encodeURIComponent(token)}` : endpoint;
       eventSource = new EventSource(streamUrl);
       eventSource.onmessage = (event) => {
         try {

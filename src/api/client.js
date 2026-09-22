@@ -1,7 +1,20 @@
 import axios from 'axios';
 
+export const getApiBaseUrl = () => {
+  const rawUrl = (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '/api').trim();
+  const trimmed = rawUrl.replace(/\/+$/, '');
+
+  // If an absolute origin without path is provided (e.g., http://localhost:8080), append /api
+  if (/^https?:\/\/[^/]+$/i.test(trimmed)) {
+    return `${trimmed}/api`;
+  }
+  return trimmed || '/api';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
