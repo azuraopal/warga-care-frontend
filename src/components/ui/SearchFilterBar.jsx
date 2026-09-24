@@ -13,9 +13,9 @@ export default function SearchFilterBar({
       style={{
         background: 'white',
         padding: '1rem 1.25rem',
-        borderRadius: '18px',
-        boxShadow: '0 10px 30px rgba(15, 23, 42, 0.04)',
-        border: '1px solid #f1f5f9',
+        borderRadius: '12px',
+        boxShadow: '0 2px 8px rgba(15, 23, 42, 0.03)',
+        border: '1px solid #e2e8f0',
         marginBottom: '1.5rem',
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -23,7 +23,7 @@ export default function SearchFilterBar({
         alignItems: 'center',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', background: '#f8fafc', padding: '0.65rem 1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', background: '#f8fafc', padding: '0.6rem 0.85rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
         <Search size={18} style={{ color: '#64748b', flexShrink: 0 }} />
         <input
           type="text"
@@ -38,7 +38,7 @@ export default function SearchFilterBar({
         <select
           key={idx}
           className="form-select"
-          style={{ padding: '0.65rem 1rem', width: '100%', borderRadius: '12px', fontSize: '0.9rem', borderColor: '#e2e8f0', background: 'white' }}
+          style={{ padding: '0.6rem 0.85rem', width: '100%', borderRadius: '10px', fontSize: '0.875rem', borderColor: '#e2e8f0', background: 'white' }}
           value={flt.value}
           onChange={(e) => flt.onChange(e.target.value)}
         >

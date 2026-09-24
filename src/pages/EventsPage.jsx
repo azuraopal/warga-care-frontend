@@ -164,7 +164,7 @@ export default function EventsPage() {
   });
 
   return (
-    <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '2.5rem 1.25rem 5rem' }}>
+    <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '1.75rem 1.25rem 4rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
         <div>
           <span className="badge badge-role-warga" style={{ marginBottom: '0.5rem' }}>
@@ -185,8 +185,8 @@ export default function EventsPage() {
               style={{
                 background: isSelectionMode ? '#e2e8f0' : 'white',
                 color: '#334155',
-                padding: '0.85rem 1.35rem',
-                borderRadius: '999px',
+                padding: '0.65rem 1.15rem',
+                borderRadius: '10px',
                 fontWeight: 700,
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -199,7 +199,8 @@ export default function EventsPage() {
             <button
               type="button"
               onClick={handleOpenCreate}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.8rem 1.4rem', borderRadius: '999px', fontWeight: 700, boxShadow: '0 8px 20px rgba(37, 99, 235, 0.25)' }}
+              className="interactive-button"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700, boxShadow: '0 2px 8px rgba(37, 99, 235, 0.25)' }}
             >
               <Plus size={18} /> Buat Agenda Kegiatan
             </button>
@@ -228,7 +229,7 @@ export default function EventsPage() {
       {loading ? (
         <SkeletonGrid count={3} />
       ) : filteredEvents.length === 0 ? (
-        <div style={{ background: 'white', padding: '4rem 2rem', borderRadius: '24px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
+        <div style={{ background: 'white', padding: '3rem 1.5rem', borderRadius: '16px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
           <Calendar size={42} style={{ color: '#94a3b8', marginBottom: '0.75rem' }} />
           <h3 style={{ marginBottom: '0.5rem' }}>Belum Ada Agenda Kegiatan</h3>
           <p style={{ color: '#64748b', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
@@ -238,7 +239,8 @@ export default function EventsPage() {
             <button
               type="button"
               onClick={handleOpenCreate}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.75rem 1.35rem', borderRadius: '999px', fontWeight: 700 }}
+              className="interactive-button"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700 }}
             >
               <Plus size={16} /> Buat Agenda Pertama
             </button>
@@ -260,12 +262,13 @@ export default function EventsPage() {
                     }
                   }
                 }}
+                className="interactive-card"
                 style={{
                   background: selectedIds.includes(item.id) ? '#eff6ff' : 'white',
-                  borderRadius: '20px',
+                  borderRadius: '14px',
                   overflow: 'hidden',
-                  boxShadow: selectedIds.includes(item.id) ? '0 10px 30px rgba(37, 99, 235, 0.15)' : '0 10px 30px rgba(15, 23, 42, 0.04)',
-                  border: selectedIds.includes(item.id) ? '2px solid #2563eb' : '1px solid #f1f5f9',
+                  boxShadow: selectedIds.includes(item.id) ? '0 4px 16px rgba(37, 99, 235, 0.12)' : '0 2px 8px rgba(15, 23, 42, 0.04)',
+                  border: selectedIds.includes(item.id) ? '2px solid #2563eb' : '1px solid #e2e8f0',
                   display: 'flex',
                   flexDirection: 'column',
                   position: 'relative',
@@ -280,7 +283,7 @@ export default function EventsPage() {
                     width: '100%',
                     overflow: 'hidden',
                     position: 'relative',
-                    borderRadius: '16px',
+                    borderRadius: '12px',
                     background: '#0f172a'
                   }}>
                     <img
@@ -372,7 +375,7 @@ export default function EventsPage() {
                   </div>
                 </div>
 
-                <div style={{ padding: '1.4rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1 }}>
+                <div style={{ padding: '1.15rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', flex: 1 }}>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#0f172a', lineHeight: 1.35 }}>{item.title}</h3>
 
                   {item.location && (

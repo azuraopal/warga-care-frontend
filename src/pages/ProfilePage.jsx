@@ -8,8 +8,8 @@ export default function ProfilePage() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   return (
-    <section style={{ maxWidth: '640px', margin: '0 auto', padding: '3rem 1.25rem 5rem' }}>
-      <div style={{ background: 'white', borderRadius: '24px', padding: '2rem', boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08)', border: '1px solid #f1f5f9' }}>
+    <section style={{ maxWidth: '640px', margin: '0 auto', padding: '2rem 1.25rem 3.5rem' }}>
+      <div style={{ background: 'white', borderRadius: '16px', padding: '1.75rem', boxShadow: '0 4px 24px rgba(15, 23, 42, 0.06)', border: '1px solid #e2e8f0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '1.75rem', paddingBottom: '1.5rem', borderBottom: '1px solid #e2e8f0' }}>
           <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#2563eb', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem', fontWeight: 800 }}>
             {(user?.fullName || user?.email || 'W')[0].toUpperCase()}
@@ -30,22 +30,22 @@ export default function ProfilePage() {
         <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: '#0f172a' }}>Informasi Warga & Wilayah</h3>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-          <div style={{ background: '#f8fafc', padding: '0.9rem 1.1rem', borderRadius: '14px' }}>
+          <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px' }}>
             <span style={{ fontSize: '0.825rem', color: '#64748b', display: 'block' }}>Wilayah RT</span>
             <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.rt || '-'}</strong>
           </div>
 
-          <div style={{ background: '#f8fafc', padding: '0.9rem 1.1rem', borderRadius: '14px' }}>
+          <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px' }}>
             <span style={{ fontSize: '0.825rem', color: '#64748b', display: 'block' }}>Wilayah RW</span>
             <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.rw || '-'}</strong>
           </div>
 
-          <div style={{ background: '#f8fafc', padding: '0.9rem 1.1rem', borderRadius: '14px' }}>
+          <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px' }}>
             <span style={{ fontSize: '0.825rem', color: '#64748b', display: 'block' }}>Nomor Telepon</span>
             <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.phone || '-'}</strong>
           </div>
 
-          <div style={{ background: '#f8fafc', padding: '0.9rem 1.1rem', borderRadius: '14px' }}>
+          <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: '10px' }}>
             <span style={{ fontSize: '0.825rem', color: '#64748b', display: 'block' }}>Alamat Lengkap</span>
             <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.address || '-'}</strong>
           </div>
@@ -65,8 +65,8 @@ export default function ProfilePage() {
               background: '#fef2f2',
               color: '#dc2626',
               border: '1px solid #fecaca',
-              padding: '0.75rem 1.35rem',
-              borderRadius: '999px',
+              padding: '0.65rem 1.15rem',
+              borderRadius: '10px',
               fontWeight: 700,
               cursor: 'pointer',
             }}

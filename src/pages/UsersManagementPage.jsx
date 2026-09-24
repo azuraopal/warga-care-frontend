@@ -155,7 +155,7 @@ export default function UsersManagementPage() {
   }
 
   return (
-    <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '2.5rem 1.25rem 5rem' }}>
+    <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '1.75rem 1.25rem 4rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
         <div>
           <span className="badge badge-role-admin" style={{ marginBottom: '0.5rem' }}>
@@ -179,8 +179,8 @@ export default function UsersManagementPage() {
             style={{
               background: isSelectionMode ? '#e2e8f0' : 'white',
               color: '#334155',
-              padding: '0.85rem 1.35rem',
-              borderRadius: '999px',
+              padding: '0.65rem 1.15rem',
+              borderRadius: '10px',
               fontWeight: 700,
               display: 'inline-flex',
               alignItems: 'center',
@@ -193,7 +193,8 @@ export default function UsersManagementPage() {
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.8rem 1.4rem', borderRadius: '999px', fontWeight: 700, boxShadow: '0 8px 20px rgba(37, 99, 235, 0.25)' }}
+            className="interactive-button"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700, boxShadow: '0 2px 8px rgba(37, 99, 235, 0.25)' }}
           >
             <UserPlus size={18} /> Tambah Warga Baru
           </button>
@@ -232,7 +233,7 @@ export default function UsersManagementPage() {
       {loading ? (
         <SkeletonCard count={3} />
       ) : filteredUsers.length === 0 ? (
-        <div style={{ background: 'white', padding: '4rem 2rem', borderRadius: '24px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
+        <div style={{ background: 'white', padding: '3rem 1.5rem', borderRadius: '16px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
           <h3 style={{ marginBottom: '0.5rem' }}>Tidak ada data warga ditemukan</h3>
           <p style={{ color: '#64748b', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
             Belum ada warga yang terdaftar atau sesuai dengan filter pencarian saat ini.
@@ -240,7 +241,8 @@ export default function UsersManagementPage() {
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.75rem 1.35rem', borderRadius: '999px', fontWeight: 700 }}
+            className="interactive-button"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700 }}
           >
             <UserPlus size={16} /> Tambah Warga Sekarang
           </button>
@@ -259,16 +261,17 @@ export default function UsersManagementPage() {
                   }
                 }
               }}
+              className="interactive-card"
               style={{
                 background: selectedIds.includes(u.id) ? '#eff6ff' : 'white',
-                borderRadius: '20px',
-                padding: '1.4rem',
-                boxShadow: selectedIds.includes(u.id) ? '0 10px 30px rgba(37, 99, 235, 0.15)' : '0 10px 30px rgba(15, 23, 42, 0.04)',
-                border: selectedIds.includes(u.id) ? '2px solid #2563eb' : (u.isActive ? '1px solid #f1f5f9' : '1px solid #fecaca'),
+                borderRadius: '14px',
+                padding: '1.25rem',
+                boxShadow: selectedIds.includes(u.id) ? '0 4px 16px rgba(37, 99, 235, 0.12)' : '0 2px 8px rgba(15, 23, 42, 0.04)',
+                border: selectedIds.includes(u.id) ? '2px solid #2563eb' : (u.isActive ? '1px solid #e2e8f0' : '1px solid #fecaca'),
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                gap: '1rem',
+                gap: '0.85rem',
                 position: 'relative',
                 transition: 'all 0.2s ease',
                 cursor: (isSelectionMode && u.id !== currentUser?.id) ? 'pointer' : 'default',
@@ -313,7 +316,7 @@ export default function UsersManagementPage() {
                 </div>
               </div>
 
-              <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '12px', fontSize: '0.85rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', color: '#475569' }}>
+              <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '10px', fontSize: '0.85rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', color: '#475569' }}>
                 <div><strong>RT/RW:</strong> {u.rt || '-'}/{u.rw || '-'}</div>
                 <div><strong>No HP:</strong> {u.phone || '-'}</div>
               </div>

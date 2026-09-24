@@ -482,7 +482,7 @@ Tertanda,
         </div>
       )}
 
-      <div className="no-print" style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', borderRadius: '24px', padding: '2rem 2.25rem', color: 'white', marginBottom: '2rem', boxShadow: '0 12px 30px rgba(37, 99, 235, 0.25)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
+      <div className="no-print" style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', borderRadius: '16px', padding: '1.75rem 2rem', color: 'white', marginBottom: '1.5rem', boxShadow: '0 4px 16px rgba(37, 99, 235, 0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(8px)', padding: '0.35rem 0.85rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.75rem' }}>
             <Building size={14} />
@@ -501,19 +501,19 @@ Tertanda,
             <>
               <button
                 onClick={handleOpenCreateTx}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#ffffff', color: '#1e3a8a', padding: '0.75rem 1.25rem', borderRadius: '14px', fontWeight: 700, fontSize: '0.9rem', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#ffffff', color: '#1e3a8a', padding: '0.65rem 1.15rem', borderRadius: '10px', fontWeight: 700, fontSize: '0.875rem', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
               >
                 <Plus size={18} /> Catat Transaksi Kas
               </button>
               <button
                 onClick={handleExportCSV}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.3)', padding: '0.75rem 1.1rem', borderRadius: '14px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.3)', padding: '0.65rem 1rem', borderRadius: '10px', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' }}
               >
                 <Download size={16} /> Export CSV
               </button>
               <button
                 onClick={handleOpenPreviewReport}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.25)', color: 'white', border: '1px solid rgba(255,255,255,0.4)', padding: '0.75rem 1.1rem', borderRadius: '14px', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255, 255, 255, 0.25)', color: 'white', border: '1px solid rgba(255,255,255,0.4)', padding: '0.65rem 1rem', borderRadius: '10px', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer' }}
               >
                 <Printer size={16} /> Preview & Cetak PDF
               </button>
@@ -522,9 +522,9 @@ Tertanda,
         </div>
       </div>
 
-      <div className="no-print" style={{ background: 'linear-gradient(135deg, #fffbe8 0%, #fef3c7 100%)', border: '1px solid #fde68a', borderRadius: '20px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', boxShadow: '0 4px 16px rgba(245, 158, 11, 0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="no-print" style={{ background: 'linear-gradient(135deg, #fffbe8 0%, #fef3c7 100%)', border: '1px solid #fde68a', borderRadius: '14px', padding: '1.15rem 1.35rem', marginBottom: '1.5rem', boxShadow: '0 2px 8px rgba(245, 158, 11, 0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-          <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: '#f59e0b', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', boxShadow: '0 4px 10px rgba(245, 158, 11, 0.3)' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#f59e0b', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px', boxShadow: '0 2px 6px rgba(245, 158, 11, 0.25)' }}>
             <Calendar size={22} />
           </div>
           <div>
@@ -554,7 +554,7 @@ Tertanda,
           href={`https://wa.me/?text=${encodeURIComponent(`Halo Pak Ketua RT ${userRt} (Bpk. H. Ahmad Subagja), saya ${user?.fullName || 'Warga'} mau konfirmasi/lunas pembayaran iuran kas RT.`)}`}
           target="_blank"
           rel="noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#25D366', color: 'white', padding: '0.65rem 1.1rem', borderRadius: '12px', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none', boxShadow: '0 4px 12px rgba(37, 211, 102, 0.25)', whiteSpace: 'nowrap' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#25D366', color: 'white', padding: '0.6rem 1rem', borderRadius: '10px', fontWeight: 700, fontSize: '0.825rem', textDecoration: 'none', boxShadow: '0 2px 8px rgba(37, 211, 102, 0.2)', whiteSpace: 'nowrap' }}
         >
           <MessageSquare size={16} /> Hubungi Ketua RT
         </a>
@@ -562,7 +562,7 @@ Tertanda,
 
       <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
 
-        <div style={{ background: 'white', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(15,23,42,0.04)' }}>
+        <div className="interactive-card" style={{ background: 'white', borderRadius: '14px', padding: '1.25rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(15,23,42,0.03)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
             <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 600 }}>Saldo Kas RT Saat Ini</span>
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -577,7 +577,7 @@ Tertanda,
           </span>
         </div>
 
-        <div style={{ background: 'white', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(15,23,42,0.04)' }}>
+        <div className="interactive-card" style={{ background: 'white', borderRadius: '14px', padding: '1.25rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(15,23,42,0.03)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
             <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 600 }}>Total Pemasukan</span>
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#dcfce7', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -592,7 +592,7 @@ Tertanda,
           </span>
         </div>
 
-        <div style={{ background: 'white', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(15,23,42,0.04)' }}>
+        <div className="interactive-card" style={{ background: 'white', borderRadius: '14px', padding: '1.25rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(15,23,42,0.03)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
             <span style={{ color: '#64748b', fontSize: '0.875rem', fontWeight: 600 }}>Total Pengeluaran</span>
             <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -647,7 +647,7 @@ Tertanda,
       </div>
 
       {activeTab === 'transactions' && (
-        <div style={{ background: 'white', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(15,23,42,0.04)' }}>
+        <div style={{ background: 'white', borderRadius: '14px', padding: '1.35rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(15,23,42,0.03)' }}>
 
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '1.5rem', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', flex: 1 }}>
@@ -658,14 +658,14 @@ Tertanda,
                   placeholder="Cari transaksi kas..."
                   value={searchKeyword}
                   onChange={(e) => setSearchKeyword(e.target.value)}
-                  style={{ width: '100%', padding: '0.65rem 1rem 0.65rem 2.5rem', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.9rem', outline: 'none' }}
+                  style={{ width: '100%', padding: '0.6rem 1rem 0.6rem 2.5rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.875rem', outline: 'none' }}
                 />
               </div>
 
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                style={{ padding: '0.65rem 1rem', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.9rem', background: 'white' }}
+                style={{ padding: '0.6rem 0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.875rem', background: 'white' }}
               >
                 <option value="ALL">Semua Jenis</option>
                 <option value="INCOME">Pemasukan (+)</option>
@@ -675,7 +675,7 @@ Tertanda,
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                style={{ padding: '0.65rem 1rem', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '0.9rem', background: 'white' }}
+                style={{ padding: '0.6rem 0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.875rem', background: 'white' }}
               >
                 <option value="ALL">Semua Kategori</option>
                 {KAS_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -685,7 +685,8 @@ Tertanda,
             {isAdmin && (
               <button
                 onClick={handleOpenCreateTx}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.65rem 1.1rem', borderRadius: '12px', fontWeight: 600, fontSize: '0.875rem' }}
+                className="interactive-button"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.6rem 1rem', borderRadius: '10px', fontWeight: 600, fontSize: '0.875rem' }}
               >
                 <Plus size={16} /> Tambah Transaksi
               </button>
@@ -782,7 +783,7 @@ Tertanda,
       )}
 
       {activeTab === 'iuran' && (
-        <div style={{ background: 'white', borderRadius: '20px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(15,23,42,0.04)' }}>
+        <div style={{ background: 'white', borderRadius: '14px', padding: '1.35rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(15,23,42,0.03)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
@@ -875,7 +876,7 @@ Tertanda,
           </div>
 
           {!isAdmin && (
-            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.1rem 1.25rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
                 <h4 style={{ margin: '0 0 0.25rem', fontSize: '1rem', color: '#0f172a' }}>
                   Status Tagihan & Iuran Kas Sdr/i {user?.fullName || user?.name || 'Warga'}
@@ -884,7 +885,7 @@ Tertanda,
                   Lokasi: {userRt} | Status diperbarui secara otomatis oleh Pengurus RT.
                 </p>
               </div>
-              <div style={{ fontSize: '0.825rem', color: '#475569', background: '#ffffff', padding: '0.5rem 1rem', borderRadius: '12px', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <div style={{ fontSize: '0.825rem', color: '#475569', background: '#ffffff', padding: '0.45rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <Info size={15} style={{ color: '#2563eb' }} /> Jika status belum sesuai, Anda dapat mengonfirmasi ke Pengurus RT.
               </div>
             </div>
@@ -1161,7 +1162,7 @@ Tertanda,
       )}
 
       {activeTab === 'recap' && (
-        <div style={{ background: 'white', borderRadius: '20px', padding: '2.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(15,23,42,0.04)' }} className="recap-print-document">
+        <div style={{ background: 'white', borderRadius: '14px', padding: '2rem', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(15,23,42,0.03)' }} className="recap-print-document">
           <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
             <div>
               <h2 style={{ margin: '0 0 0.25rem', fontSize: '1.35rem' }}>Laporan Rekapitulasi Kas {userRt}</h2>
@@ -1169,7 +1170,7 @@ Tertanda,
             </div>
             <button
               onClick={handleOpenPreviewReport}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#0f172a', color: 'white', padding: '0.7rem 1.4rem', borderRadius: '12px', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', border: 'none', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#0f172a', color: 'white', padding: '0.65rem 1.15rem', borderRadius: '10px', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer', border: 'none', boxShadow: '0 2px 8px rgba(15, 23, 42, 0.12)' }}
             >
               <Printer size={18} /> Preview & Cetak PDF
             </button>
@@ -1194,19 +1195,19 @@ Tertanda,
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
-              <div style={{ background: '#f8fafc', padding: '1.1rem', borderRadius: '12px', border: '1px solid #cbd5e1', textAlign: 'center' }}>
+              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #cbd5e1', textAlign: 'center' }}>
                 <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Saldo Akhir Kas</span>
                 <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', marginTop: '0.25rem' }}>
                   Rp {summary.currentBalance.toLocaleString('id-ID')}
                 </div>
               </div>
-              <div style={{ background: '#f0fdf4', padding: '1.1rem', borderRadius: '12px', border: '1px solid #bbf7d0', textAlign: 'center' }}>
+              <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: '10px', border: '1px solid #bbf7d0', textAlign: 'center' }}>
                 <span style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 700, textTransform: 'uppercase' }}>Total Pemasukan</span>
                 <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#16a34a', marginTop: '0.25rem' }}>
                   Rp {summary.totalIncome.toLocaleString('id-ID')}
                 </div>
               </div>
-              <div style={{ background: '#fef2f2', padding: '1.1rem', borderRadius: '12px', border: '1px solid #fecaca', textAlign: 'center' }}>
+              <div style={{ background: '#fef2f2', padding: '1rem', borderRadius: '10px', border: '1px solid #fecaca', textAlign: 'center' }}>
                 <span style={{ fontSize: '0.8rem', color: '#b91c1c', fontWeight: 700, textTransform: 'uppercase' }}>Total Pengeluaran</span>
                 <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#dc2626', marginTop: '0.25rem' }}>
                   Rp {summary.totalExpense.toLocaleString('id-ID')}
@@ -1215,7 +1216,7 @@ Tertanda,
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.1rem', background: '#ffffff' }}>
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', background: '#ffffff' }}>
                 <h4 style={{ margin: '0 0 1rem', fontSize: '0.95rem', fontWeight: 800, color: '#16a34a', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                   <TrendingUp size={16} /> Breakdown Pemasukan per Kategori
                 </h4>
@@ -1239,7 +1240,7 @@ Tertanda,
                 </table>
               </div>
 
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1.1rem', background: '#ffffff' }}>
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem', background: '#ffffff' }}>
                 <h4 style={{ margin: '0 0 1rem', fontSize: '0.95rem', fontWeight: 800, color: '#dc2626', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                   <TrendingDown size={16} /> Breakdown Pengeluaran per Kategori
                 </h4>

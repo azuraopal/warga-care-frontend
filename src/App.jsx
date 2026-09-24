@@ -889,8 +889,8 @@ function AuthForm({ mode }) {
   }
 
   return (
-    <section style={{ maxWidth: '460px', margin: '0 auto', padding: '4rem 1.25rem 5rem' }}>
-      <div style={{ background: 'white', borderRadius: '24px', padding: '2rem', boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08)', border: '1px solid #f1f5f9' }}>
+    <section style={{ maxWidth: '460px', margin: '0 auto', padding: '2.5rem 1.25rem 3.5rem' }}>
+      <div className="interactive-card" style={{ background: '#ffffff', borderRadius: '16px', padding: '2rem', boxShadow: '0 4px 24px rgba(15, 23, 42, 0.06)', border: '1px solid #e2e8f0' }}>
         <h1 style={{ marginBottom: '0.45rem', fontSize: '1.8rem', fontWeight: 800 }}>
           {mode === 'login' ? 'Masuk ke WargaCare' : 'Buat Akun Baru'}
         </h1>
@@ -977,7 +977,7 @@ function AuthForm({ mode }) {
 
           {error ? <div style={{ color: '#dc2626', background: '#fef2f2', border: '1px solid #fecaca', padding: '0.75rem', borderRadius: '12px', fontSize: '0.9rem' }}>{error}</div> : null}
 
-          <button type="submit" disabled={loading} style={{ padding: '0.9rem 1rem', borderRadius: '999px', background: '#2563eb', color: 'white', fontWeight: 700, cursor: 'pointer', marginTop: '0.5rem', boxShadow: '0 10px 25px rgba(37, 99, 235, 0.25)' }}>
+          <button type="submit" disabled={loading} className="interactive-button" style={{ padding: '0.85rem 1rem', borderRadius: '10px', background: '#2563eb', color: 'white', fontWeight: 700, cursor: 'pointer', marginTop: '0.5rem', boxShadow: '0 2px 8px rgba(37, 99, 235, 0.25)', border: 'none' }}>
             {loading ? 'Memproses...' : mode === 'login' ? 'Masuk' : 'Daftar Sekarang'}
           </button>
 
@@ -1223,11 +1223,12 @@ function App() {
 
 const inputStyle = {
   width: '100%',
-  padding: '0.8rem 1rem',
-  borderRadius: '12px',
+  padding: '0.75rem 0.95rem',
+  borderRadius: '10px',
   border: '1px solid #cbd5e1',
   outline: 'none',
-  fontSize: '0.95rem',
+  fontSize: '0.925rem',
+  transition: 'border-color 0.2s ease',
 }
 
 export default App

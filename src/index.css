@@ -241,7 +241,7 @@ img {
 
 .modal-content {
   background: #ffffff;
-  border-radius: 24px;
+  border-radius: 16px;
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
@@ -1139,6 +1139,40 @@ img {
   border-radius: 6px;
 }
 
-
-
-
+/* CommunityHero3D SVG Animations */
+@keyframes heroFloatA {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes heroFloatB {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes heroFloatC {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes pinBob {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes checkPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+.anim-badge-1 {
+  animation: heroFloatA 4.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+.anim-badge-2 {
+  animation: heroFloatB 5.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.8s infinite;
+}
+.anim-badge-3 {
+  animation: heroFloatC 5.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.5s infinite;
+}
+.anim-pin {
+  animation: pinBob 3.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+.anim-check {
+  animation: checkPulse 3s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  transform-origin: 15px 24px;
+}

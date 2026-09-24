@@ -73,55 +73,7 @@ export default function CommunityHero3D({ className = '', style = {} }) {
         <filter id="pinShadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="6" stdDeviation="5" floodColor="#dc2626" floodOpacity="0.25" />
         </filter>
-        {/* Subtle, organic 3D float keyframes */}
-        <style>{`
-          @keyframes heroFloatA {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-7px); }
-          }
-          @keyframes heroFloatB {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-          }
-          @keyframes heroFloatC {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-          }
-          @keyframes pinBob {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
-          }
-          @keyframes checkPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-          }
-          .anim-badge-1 {
-            animation: heroFloatA 4.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-            will-change: transform;
-          }
-          .anim-badge-2 {
-            animation: heroFloatB 5.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.8s infinite;
-            will-change: transform;
-          }
-          .anim-badge-3 {
-            animation: heroFloatC 5.0s cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.5s infinite;
-            will-change: transform;
-          }
-          .anim-pin {
-            animation: pinBob 3.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-            will-change: transform;
-          }
-          .anim-check {
-            animation: checkPulse 3s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-            transform-origin: 15px 24px;
-            will-change: transform;
-          }
-          @media (prefers-reduced-motion: reduce) {
-            .anim-badge-1, .anim-badge-2, .anim-badge-3, .anim-pin, .anim-check {
-              animation: none !important;
-            }
-          }
-        `}</style>
+        {/* Animation classes defined in index.css for better caching */}
       </defs>
       {/* 3D Base Platform / Ground Island */}
       <g filter="url(#soft3DShadow)">

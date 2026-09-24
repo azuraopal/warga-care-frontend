@@ -388,7 +388,7 @@ export default function ReportsPage() {
   });
 
   return (
-    <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '2.5rem 1.25rem 5rem' }}>
+    <section style={{ maxWidth: '1180px', margin: '0 auto', padding: '1.75rem 1.25rem 4rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
         <div>
           <span className={`badge ${isAdmin ? 'badge-role-admin' : 'badge-role-warga'}`} style={{ marginBottom: '0.5rem' }}>
@@ -415,8 +415,8 @@ export default function ReportsPage() {
               style={{
                 background: isSelectionMode ? '#e2e8f0' : 'white',
                 color: '#334155',
-                padding: '0.85rem 1.35rem',
-                borderRadius: '999px',
+                padding: '0.65rem 1.15rem',
+                borderRadius: '10px',
                 fontWeight: 700,
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -429,7 +429,8 @@ export default function ReportsPage() {
             <button
               type="button"
               onClick={() => setShowCreateModal(true)}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.8rem 1.4rem', borderRadius: '999px', fontWeight: 700, boxShadow: '0 8px 20px rgba(37, 99, 235, 0.25)' }}
+              className="interactive-button"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700, boxShadow: '0 2px 8px rgba(37, 99, 235, 0.25)' }}
             >
               <Plus size={18} /> Buat Laporan Pengaduan
             </button>
@@ -476,7 +477,7 @@ export default function ReportsPage() {
       {loading ? (
         <SkeletonCard count={3} />
       ) : filteredReports.length === 0 ? (
-        <div style={{ background: 'white', padding: '4rem 2rem', borderRadius: '24px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
+        <div style={{ background: 'white', padding: '3rem 1.5rem', borderRadius: '16px', textAlign: 'center', border: '1px dashed #cbd5e1' }}>
           <h3 style={{ marginBottom: '0.5rem' }}>Belum ada laporan pengaduan</h3>
           <p style={{ color: '#64748b', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
             {isAdmin ? 'Tidak ada laporan pengaduan masuk saat ini.' : 'Anda belum pernah mengirimkan laporan pengaduan.'}
@@ -485,7 +486,8 @@ export default function ReportsPage() {
             <button
               type="button"
               onClick={() => setShowCreateModal(true)}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.75rem 1.35rem', borderRadius: '999px', fontWeight: 700 }}
+              className="interactive-button"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#2563eb', color: 'white', padding: '0.65rem 1.25rem', borderRadius: '10px', fontWeight: 700 }}
             >
               <Plus size={16} /> Buat Laporan Pertama
             </button>
@@ -509,14 +511,15 @@ export default function ReportsPage() {
                   }
                 }
               }}
+              className="interactive-card"
               style={{
                 background: selectedIds.includes(item.id) ? '#eff6ff' : 'white',
-                borderRadius: '20px',
-                padding: '1.5rem',
-                boxShadow: selectedIds.includes(item.id) ? '0 10px 30px rgba(37, 99, 235, 0.15)' : '0 10px 30px rgba(15, 23, 42, 0.04)',
-                border: selectedIds.includes(item.id) ? '2px solid #2563eb' : (item.status === 'SELESAI' ? '1px solid #bbf7d0' : '1px solid #f1f5f9'),
+                borderRadius: '14px',
+                padding: '1.25rem',
+                boxShadow: selectedIds.includes(item.id) ? '0 4px 16px rgba(37, 99, 235, 0.12)' : '0 2px 8px rgba(15, 23, 42, 0.04)',
+                border: selectedIds.includes(item.id) ? '2px solid #2563eb' : (item.status === 'SELESAI' ? '1px solid #bbf7d0' : '1px solid #e2e8f0'),
                 display: 'grid',
-                gap: '1rem',
+                gap: '0.85rem',
                 position: 'relative',
                 transition: 'all 0.2s ease',
                 cursor: (!isAdmin && isSelectionMode && item.status === 'PENDING') ? 'pointer' : (!isAdmin && isSelectionMode ? 'not-allowed' : 'default'),
@@ -626,7 +629,8 @@ export default function ReportsPage() {
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); handleOpenDetail(item.id); }}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', color: '#0f172a', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                  className="interactive-button"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', color: '#0f172a', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
                 >
                   <Search size={14} /> Lihat Detail
                 </button>
@@ -637,7 +641,7 @@ export default function ReportsPage() {
                         disabled
                         type="button"
                         onClick={(e) => e.stopPropagation()}
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.875rem', fontWeight: 600, cursor: 'not-allowed' }}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.825rem', fontWeight: 600, cursor: 'not-allowed' }}
                       >
                         <Lock size={14} /> Status Selesai
                       </button>
@@ -645,7 +649,8 @@ export default function ReportsPage() {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); handleOpenStatusModal(item); }}
-                        style={{ background: '#0f172a', color: 'white', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                        className="interactive-button"
+                        style={{ background: '#0f172a', color: 'white', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, border: 'none', cursor: 'pointer' }}
                       >
                         Ubah Status Laporan
                       </button>
@@ -655,7 +660,8 @@ export default function ReportsPage() {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setReportToDelete(item); }}
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.6rem 1.15rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}
+                        className="interactive-button"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}
                       >
                         <Trash2 size={14} /> Hapus Laporan
                       </button>

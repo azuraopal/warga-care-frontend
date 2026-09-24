@@ -98,9 +98,9 @@ export default function CivicHeroShowcase() {
       className="interactive-card"
       style={{
         background: '#ffffff',
-        borderRadius: '20px',
+        borderRadius: '14px',
         border: '1px solid #e2e8f0',
-        boxShadow: '0 8px 30px rgba(15, 23, 42, 0.06)',
+        boxShadow: '0 4px 16px rgba(15, 23, 42, 0.05)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
