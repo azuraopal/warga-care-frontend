@@ -164,8 +164,8 @@ export default function LiveChatWidget({ isMobileMenuOpen }) {
               }}
             />
           </div>
-          <span style={{ fontWeight: 800, fontSize: '0.95rem', letterSpacing: '0.01em' }}>Tanya AI</span>
-          <Sparkles size={16} style={{ opacity: 0.85 }} />
+          <span className="live-chat-label" style={{ fontWeight: 800, fontSize: '0.95rem', letterSpacing: '0.01em' }}>Tanya AI</span>
+          <Sparkles className="live-chat-sparkle" size={16} style={{ opacity: 0.85 }} />
         </button>
       )}
 

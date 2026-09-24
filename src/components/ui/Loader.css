@@ -1,0 +1,37 @@
+.loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.loader-ring {
+  border-radius: 50%;
+  border-style: solid;
+  border-color: #e2e8f0;
+  border-top-color: #2563eb;
+  animation: wc-spin 0.75s linear infinite;
+}
+
+.loader-sm .loader-ring {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+.loader-md .loader-ring {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+.loader-lg .loader-ring {
+  width: 48px;
+  height: 48px;
+  border-width: 4px;
+}
+
+@keyframes wc-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

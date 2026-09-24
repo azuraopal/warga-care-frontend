@@ -60,7 +60,9 @@ export function NotificationProvider({ children }) {
 
   const playChimeSound = () => {
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
@@ -72,7 +74,18 @@ export function NotificationProvider({ children }) {
       gain.connect(ctx.destination);
       osc.start();
       osc.stop(ctx.currentTime + 0.3);
-    } catch (e) {}
+      osc.onended = () => {
+        try {
+          ctx.close();
+        } catch (_) {}
+      };
+      // Fallback cleanup in case onended is not fired
+      setTimeout(() => {
+        if (ctx.state !== 'closed') {
+          try { ctx.close(); } catch (_) {}
+        }
+      }, 500);
+    } catch (_) {}
   };
 
   const addNotification = useCallback((report, shouldBroadcast = true) => {
@@ -170,7 +183,11 @@ export function NotificationProvider({ children }) {
     };
 
     fetchLatestReports();
-    const interval = setInterval(fetchLatestReports, 5000);
+    // Conservative 30s fallback poll only when tab is visible to spare server & browser memory
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      fetchLatestReports();
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [isAdmin, updateNotifications]);

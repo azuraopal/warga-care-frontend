@@ -32,22 +32,22 @@ export default function ProfilePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
           <div style={{ background: '#f8fafc', padding: '0.9rem 1.1rem', borderRadius: '14px' }}>
             <span style={{ fontSize: '0.825rem', color: '#64748b', display: 'block' }}>Wilayah RT</span>
-            <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.rt || '—'}</strong>
+            <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.rt || '-'}</strong>
           </div>
 
           <div style={{ background: '#f8fafc', padding: '0.9rem 1.1rem', borderRadius: '14px' }}>
             <span style={{ fontSize: '0.825rem', color: '#64748b', display: 'block' }}>Wilayah RW</span>
-            <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.rw || '—'}</strong>
+            <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.rw || '-'}</strong>
           </div>
 
           <div style={{ background: '#f8fafc', padding: '0.9rem 1.1rem', borderRadius: '14px' }}>
             <span style={{ fontSize: '0.825rem', color: '#64748b', display: 'block' }}>Nomor Telepon</span>
-            <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.phone || '—'}</strong>
+            <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.phone || '-'}</strong>
           </div>
 
           <div style={{ background: '#f8fafc', padding: '0.9rem 1.1rem', borderRadius: '14px' }}>
             <span style={{ fontSize: '0.825rem', color: '#64748b', display: 'block' }}>Alamat Lengkap</span>
-            <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.address || '—'}</strong>
+            <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{user?.address || '-'}</strong>
           </div>
         </div>
 

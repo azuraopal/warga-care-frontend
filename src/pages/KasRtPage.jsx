@@ -265,8 +265,7 @@ export default function KasRtPage() {
       `- Nominal Tagihan: *${rateStr}*\n` +
       `- Status: MENUNGGAK\n\n` +
       `Mohon dapat disetorkan kepada Pengurus/Admin RT. Terima kasih atas partisipasi dan kerja samanya!\n\n` +
-      `— Pengurus ${userRt} (WargaCare)`;
-
+      `- Pengurus ${userRt} (WargaCare)`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -278,8 +277,7 @@ export default function KasRtPage() {
       `- Nominal Tagihan: *Rp 50.000*\n` +
       `- Status: BELUM BAYAR\n\n` +
       `Mohon dapat disetorkan kepada Pengurus/Admin RT. Terima kasih atas partisipasi dan kebersamaannya!\n\n` +
-      `— Pengurus ${userRt} (WargaCare)`;
-
+      `- Pengurus ${userRt} (WargaCare)`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
   };
 
